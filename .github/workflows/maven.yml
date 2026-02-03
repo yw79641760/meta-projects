@@ -18,8 +18,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    # 统一指定所有步骤的工作目录为meta-bom/
-    working-directory: meta-bom
+    defaults:
+      run:
+        working-directory: meta-bom  # 全局配置：所有run命令默认在meta-bom/下执行
 
     steps:
     - uses: actions/checkout@v4
