@@ -30,7 +30,8 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-        cache-dependency-path: pom.xml
+        # 该参数不继承defaults.run的工作目录
+        cache-dependency-path: meta-bom/pom.xml
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
