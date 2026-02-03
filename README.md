@@ -62,7 +62,7 @@ mvn clean install
 
 ```xml
 <dependency>
-   <groupId>com.softmegatron.meta</groupId>
+   <groupId>com.softmegatron.shared</groupId>
    <artifactId>meta-commons-data</artifactId>
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
