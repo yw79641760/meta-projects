@@ -1,8 +1,17 @@
+![SoftMegatron](https://cdn.softmegatron.com/favicon/apple-touch-icon.png)
+<style>
+  img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+
 # Meta Projects
 
 ## 项目简介
 
-`Meta Projects` 是一个专注于提供高效、稳定的基础工具库和框架的项目集合。它包括多个子模块，涵盖了数据处理、远程调用、扩展机制、验证工具等多个方面，旨在为开发者提供一套完整的解决方案。
+`Meta Projects` 是一个专注于提供高效、稳定的基础工具库和框架的项目集合。它包括多个子模块，涵盖了常用数据结构、数据处理、远程调用、扩展机制、验证工具等多个方面，旨在为开发者提供一套完整的解决方案。
 
 ## 目录结构
 
@@ -10,7 +19,7 @@
 meta-projects/ 
 ├── meta-bom/ # 依赖管理模块 
 ├── meta-commons-data/ # 数据处理基础类 
-├── meta-commons-data-model/ # 数据模型定义 
+├── meta-commons-data-model/ # 数据模型扩展定义 
 ├── meta-commons-utils/ # 工具类集合 
 ├── meta-core/ # 核心功能模块 
 ├── meta-extension/ # 扩展机制模块 
@@ -31,7 +40,7 @@ meta-projects/
 可以通过 Git 克隆项目仓库：
 
 ```bash
-git clone https://github.com/your-repo/meta-projects.git cd meta-projects
+git clone https://github.com/SoftMegatron/meta-projects.git cd meta-projects
 ```
 ### 构建项目
 
@@ -49,7 +58,7 @@ mvn clean install
 
 ```xml
 <dependency>
-   <groupId>com.magi.meta</groupId>
+   <groupId>com.softmegatron.meta</groupId>
    <artifactId>meta-commons-data</artifactId>
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -61,9 +70,9 @@ mvn clean install
 #### 数据处理
 
 ```java
-import com.magi.meta.commons.data.model.biz.currency.Money;
+import com.softmegatron.meta.commons.data.model.biz.currency.Money;
 public class Example { 
-   public static void main(String[] args) { 
+   static void main(String[] args) { 
       Money money = new Money(100, "CNY"); 
       System.out.println("Amount: " + money.getAmount()); 
    } 
@@ -73,9 +82,9 @@ public class Example {
 #### 远程调用
 
 ```java 
-import com.magi.meta.remoting.http.HttpRemoteServiceImpl;
+import com.softmegatron.meta.remoting.http.HttpRemoteServiceImpl;
 public class RemoteExample { 
-   public static void main(String[] args) { 
+   static void main(String[] args) { 
       HttpRemoteServiceImpl service = new HttpRemoteServiceImpl(); 
       // 调用远程服务 service.callRemoteService(); 
    } 
@@ -88,17 +97,17 @@ public class RemoteExample {
 
 1. **Fork** 本仓库。
 2. 创建一个新的分支 (`git checkout -b feature/new-feature`)。
-3. 提交你的更改 (`git commit -am 'Add some feature'`)。
+3. 提交你的更改 (`git commit -am 'feat:Add some feature'`)。
 4. 推送到分支 (`git push origin feature/new-feature`)。
 5. 提交 Pull Request。
 
 ## 许可证
 
-本项目采用 [Apache License 2.0](LICENSE) 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
+本项目采用 [MIT](LICENSE) 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
 
 ## 联系方式
-
+    
 如有任何问题或建议，请通过以下方式联系我们：
 
-- GitHub Issues: [https://github.com/your-repo/meta-projects/issues](https://github.com/your-repo/meta-projects/issues)
-- Email: opensource@magi.website
+- GitHub Issues: [https://github.com/SoftMegatron/meta-projects/issues](https://github.com/SoftMegatron/meta-projects/issues)
+- Email: opensource@softmegatron.com
