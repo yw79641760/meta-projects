@@ -40,6 +40,9 @@ public class HttpRemoteUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRemoteUtils.class);
 
+    private HttpRemoteUtils() {
+    }
+
     /**
      * 绕过SSL验证
      *

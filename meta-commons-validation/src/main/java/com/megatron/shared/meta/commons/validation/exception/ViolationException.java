@@ -32,7 +32,7 @@ public class ViolationException extends RuntimeException {
     public String getMessage() {
         StringBuilder sb = new StringBuilder();
         violations.forEach(violation -> {
-            sb.append(String.format("[message=%s][propertyPath=%s][invalidValue=%s]\n",
+            sb.append(String.format("[message=%s][propertyPath=%s][invalidValue=%s]%n",
                                     violation.getMessage(),
                                     violation.getPropertyPath(),
                                     violation.getInvalidValue()));

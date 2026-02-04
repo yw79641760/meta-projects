@@ -32,11 +32,7 @@ public class SortedVertexMutableDAG<Vertex, VertexInfo, Edge, EdgeInfo>
     }
 
     protected boolean addDegreeIfAbsent(Vertex fromVertex, Vertex toVertex, Edge edge, EdgeInfo edgeInfo, Map<Vertex, Map<Vertex, Edge>> edgeMap) {
-        if (!edgeMap.containsKey(fromVertex)) {
-            // 顶点排序
-            edgeMap.put(fromVertex, new TreeMap<Vertex, Edge>());
-        }
-        Map<Vertex, Edge> outEdgeMap = edgeMap.get(fromVertex);
+        Map<Vertex, Edge> outEdgeMap = edgeMap.computeIfAbsent(fromVertex, k -> new TreeMap<Vertex, Edge>());
         outEdgeMap.put(toVertex, edge);
         return true;
     }
