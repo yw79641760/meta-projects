@@ -329,4 +329,5 @@ Temporary Items
 
 # VSCode
 .vscode/
-
+.classpath
+.project
