@@ -31,7 +31,9 @@ public class SimpleMutableDAG<Vertex, VertexInfo, Edge, EdgeInfo>
     }
 
     protected boolean addDegreeIfAbsent(Vertex fromVertex, Vertex toVertex, Edge edge, EdgeInfo edgeInfo, Map<Vertex, Map<Vertex, Edge>> edgeMap) {
-        Map.computeIfAbsent(toVertex, k -> new HashMap<>());
+        if (!edgeMap.containsKey(fromVertex)) {
+            edgeMap.put(fromVertex, new HashMap<Vertex, Edge>());
+        }
         Map<Vertex, Edge> outEdgeMap = edgeMap.get(fromVertex);
         outEdgeMap.put(toVertex, edge);
         return true;
