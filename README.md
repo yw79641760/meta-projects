@@ -14,6 +14,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![build_status](https://github.com/SoftMegatron/meta-projects/actions/workflows/maven.yml/badge.svg)
 ![codeclimate](https://codeclimate.com/github/SoftMegatron/meta-projects/badges/gpa.svg)
+[![codecov](https://codecov.io/github/SoftMegatron/meta-projects/graph/badge.svg?token=3CFXBDSBC2)](https://codecov.io/github/SoftMegatron/meta-projects)
+![synk](https://snyk.io/test/github/SoftMegatron/meta-projects/badge.svg)
 
 ## 项目简介
 
@@ -76,24 +78,26 @@ mvn clean install
 #### 数据处理
 
 ```java
-import com.softmegatron.meta.commons.data.model.biz.currency.Money;
-public class Example { 
-   static void main(String[] args) { 
-      Money money = new Money(100, "CNY"); 
-      System.out.println("Amount: " + money.getAmount()); 
-   } 
+import currency.biz.model.com.megatron.shared.meta.commons.data.Money;
+
+public class Example {
+    static void main(String[] args) {
+        Money money = new Money(100, "CNY");
+        System.out.println("Amount: " + money.getAmount());
+    }
 }
 ```
 
 #### 远程调用
 
 ```java 
-import com.softmegatron.meta.remoting.http.HttpRemoteServiceImpl;
-public class RemoteExample { 
-   static void main(String[] args) { 
-      HttpRemoteServiceImpl service = new HttpRemoteServiceImpl(); 
-      // 调用远程服务 service.callRemoteService(); 
-   } 
+import http.com.megatron.shared.meta.remoting.HttpRemoteServiceImpl;
+
+public class RemoteExample {
+    static void main(String[] args) {
+        HttpRemoteServiceImpl service = new HttpRemoteServiceImpl();
+        // 调用远程服务 service.callRemoteService(); 
+    }
 }
 ```
 
