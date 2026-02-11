@@ -34,7 +34,7 @@ public class BaseResponse<T> extends SimpleResponse{
         this.data = data;
     }
 
-    public BaseResponse(String requestId, boolean success, String code, String message, Map feature, T data) {
+    public BaseResponse(String requestId, boolean success, String code, String message, Map<?, ?> feature, T data) {
         super(requestId, success, code, message, feature);
         this.data = data;
     }
@@ -96,7 +96,7 @@ public class BaseResponse<T> extends SimpleResponse{
             return message;
         }
 
-        public Map getFeature() {
+        public Map<?, ?> getFeature() {
             return feature;
         }
 
@@ -138,7 +138,7 @@ public class BaseResponse<T> extends SimpleResponse{
             return this;
         }
 
-        public Builder<T> feature(Map feature) {
+        public Builder<T> feature(Map<?, ?> feature) {
             this.feature = feature;
             return this;
         }

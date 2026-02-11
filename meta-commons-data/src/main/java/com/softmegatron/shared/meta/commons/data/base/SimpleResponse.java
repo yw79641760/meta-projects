@@ -34,7 +34,7 @@ public class SimpleResponse extends BaseModel {
     /**
      * 特征变量
      */
-    private Map feature;
+    private Map<?, ?> feature;
 
     public SimpleResponse() {
         super();
@@ -76,11 +76,11 @@ public class SimpleResponse extends BaseModel {
         this.message = message;
     }
 
-    public Map getFeature() {
+    public Map<?, ?> getFeature() {
         return feature;
     }
 
-    public void setFeature(Map feature) {
+    public void setFeature(Map<?, ?> feature) {
         this.feature = feature;
     }
 
@@ -89,7 +89,7 @@ public class SimpleResponse extends BaseModel {
         this.requestId = requestId;
     }
 
-    public SimpleResponse(String requestId, boolean success, String code, String message, Map feature) {
+    public SimpleResponse(String requestId, boolean success, String code, String message, Map<?, ?> feature) {
         super();
         this.requestId = requestId;
         this.success = success;
@@ -135,7 +135,7 @@ public class SimpleResponse extends BaseModel {
         /**
          * 特征变量
          */
-        private Map feature;
+        private Map<?, ?> feature;
 
         public Builder() {
             super();
@@ -157,7 +157,7 @@ public class SimpleResponse extends BaseModel {
             return message;
         }
 
-        public Map getFeature() {
+        public Map<?, ?> getFeature() {
             return feature;
         }
 
@@ -195,7 +195,7 @@ public class SimpleResponse extends BaseModel {
             return this;
         }
 
-        public Builder feature(Map feature) {
+        public Builder feature(Map<?, ?> feature) {
             this.feature = feature;
             return this;
         }
