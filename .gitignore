@@ -331,3 +331,9 @@ Temporary Items
 .vscode/
 .classpath
 .project
+
+# tmux
+.tmux-*
+.tmux-session-*
+.tmux-session-*.log
+.tmux-session-*.log.lock

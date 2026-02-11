@@ -25,12 +25,14 @@
         <commons-digester.version>2.1</commons-digester.version>
         <commons-digester3.version>3.2</commons-digester3.version>
         <commons-fileupload.version>1.6.0</commons-fileupload.version>
+        <jackson.version>2.15.2</jackson.version>
+        <fastjson.version>2.0.60</fastjson.version>
     </properties>
     <modules>
-        <module>../meta-commons-logging</module>
-        <module>../meta-commons-exception</module>
+        <module>../meta-commons-serial</module>
         <module>../meta-commons-data</module>
-        <module>../meta-commons-data-model</module>
+        <module>../meta-commons-data-ext</module>
+        <module>../meta-commons-logging</module>
         <module>../meta-commons-utils</module>
         <module>../meta-core</module>
         <module>../meta-extension</module>
@@ -43,12 +45,27 @@
             <!-- meta -->
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-data</artifactId>
+                <artifactId>meta-commons-serial</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-data-model</artifactId>
+                <artifactId>meta-commons-serial-spi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-commons-serial-fastjson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-commons-serial-jackson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-commons-serial-lang</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -58,7 +75,12 @@
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-exception</artifactId>
+                <artifactId>meta-commons-data</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-commons-data-ext</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -132,6 +154,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.13.2</version>
+                <scope>test</scope>
             </dependency>
             <!-- logger -->
             <dependency>
@@ -156,6 +179,18 @@
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>3.0.0</version>
+            </dependency>
+            <!-- fastjson2 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <!-- jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

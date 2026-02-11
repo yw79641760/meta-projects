@@ -14,6 +14,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.softmegatron.shared</groupId>
             <artifactId>meta-commons-data</artifactId>
         </dependency>
