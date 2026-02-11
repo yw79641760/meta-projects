@@ -14,7 +14,8 @@ public class PageData<T> extends BaseModel{
 
     private static final long serialVersionUID = 5021157350064058810L;
 
-    public static final PageData EMPTY = new PageData(Collections.emptyList(), PageInfo.EMPTY);
+    @SuppressWarnings("rawtypes")
+    public static final PageData EMPTY = new PageData<>(Collections.emptyList(), PageInfo.EMPTY);
 
     private List<T> listInfo;
 

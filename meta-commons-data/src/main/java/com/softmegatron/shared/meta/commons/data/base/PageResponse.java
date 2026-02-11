@@ -32,7 +32,7 @@ public class PageResponse<T> extends BaseResponse<PageData<T>>{
         super(returnCode);
     }
 
-    public PageResponse(String requestId, boolean success, String code, String message, Map feature, PageData<T> data) {
+    public PageResponse(String requestId, boolean success, String code, String message, Map<?, ?> feature, PageData<T> data) {
         super(requestId, success, code, message, feature, data);
     }
 
@@ -90,7 +90,7 @@ public class PageResponse<T> extends BaseResponse<PageData<T>>{
             return message;
         }
 
-        public Map getFeature() {
+        public Map<?, ?> getFeature() {
             return feature;
         }
 
@@ -132,7 +132,7 @@ public class PageResponse<T> extends BaseResponse<PageData<T>>{
             return this;
         }
 
-        public Builder<T> feature(Map feature) {
+        public Builder<T> feature(Map<?, ?> feature) {
             this.feature = feature;
             return this;
         }

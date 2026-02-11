@@ -55,7 +55,7 @@ public class ListResponse<T> extends BaseResponse<List<T>>{
         /**
          * 特征变量
          */
-        private Map feature;
+        private Map<?, ?> feature;
         /**
          * 数据结果
          */
@@ -81,7 +81,7 @@ public class ListResponse<T> extends BaseResponse<List<T>>{
             return message;
         }
 
-        public Map getFeature() {
+        public Map<?, ?> getFeature() {
             return feature;
         }
 
@@ -123,7 +123,7 @@ public class ListResponse<T> extends BaseResponse<List<T>>{
             return this;
         }
 
-        public Builder<T> feature(Map feature) {
+        public Builder<T> feature(Map<?, ?> feature) {
             this.feature = feature;
             return this;
         }
