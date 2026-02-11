@@ -12,11 +12,20 @@ import com.softmegatron.shared.meta.commons.data.base.ReturnCode;
 public enum CommonErrorCode implements ReturnCode {
     ;
 
+    private String code;
+
+    private String desc;
+
+    CommonErrorCode(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
+
     public String getCode() {
-        return null;
+        return code;
     }
 
     public String getDesc() {
-        return null;
+        return desc;
     }
 }

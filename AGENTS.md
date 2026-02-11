@@ -2,6 +2,24 @@
 
 This file contains build commands and code style guidelines for the Meta Projects repository (Java/Maven multi-module).
 
+## 项目现状
+
+当前项目包含以下模块，其中部分模块已完成开发，部分仍在开发中：
+
+### 已完成模块
+- ✅ **meta-commons-data**: 核心数据处理库，包含完整的测试用例(187个测试)
+- ✅ **meta-commons-serial**: 序列化框架，包含SPI接口和多种实现
+- ✅ **meta-bom**: Maven依赖版本管理
+
+### 开发中模块
+- ⚠️ **meta-commons-data-ext**: 数据模型扩展
+- ⚠️ **meta-commons-logging**: 日志记录工具
+- ⚠️ **meta-commons-utils**: 通用工具类集合
+- ⚠️ **meta-core**: 核心功能模块
+- ⚠️ **meta-extension**: 扩展机制模块
+- ⚠️ **meta-remoting**: 远程调用模块
+- ⚠️ **meta-commons-validation**: 数据验证工具
+
 ## Build Commands
 
 ### Build all modules
@@ -37,14 +55,14 @@ cd meta-bom && mvn clean test jacoco:report
 ## Code Style Guidelines
 
 ### Package Structure
-- Base package: `com.megatron.shared.meta`
-- Module pattern: `com.megatron.shared.meta.{module}[.{submodule}].{type}`
+- Base package: `com.softmegatron.shared.meta`
+- Module pattern: `com.softmegatron.shared.meta.{module}[.{submodule}].{type}`
 - Type suffixes: `common`, `http`, `enums`, `model`, `constants`, `utils`, `exception`, `annotation`, `registry`
 
 ### Import Order
 1. Standard Java imports (java.*)
 2. Third-party imports (org.apache.commons, okhttp3, com.google.guava, etc.)
-3. Internal imports (com.megatron.shared.meta.*)
+3. Internal imports (com.softmegatron.shared.meta.*)
 4. Static imports (`import static`)
 
 Separate each group with a blank line.
@@ -84,6 +102,7 @@ public class ClassName extends BaseType {
 - Enums implement `BaseEnum` (requires `getDesc()`)
 - Responses use `BaseResponse<T>` with Builder pattern
 - Exceptions extend `RuntimeException`
+- Serializable classes extend `BaseSerializable`
 
 ### Required Members
 - Serializable classes: `private static final long serialVersionUID`
@@ -94,6 +113,7 @@ public class ClassName extends BaseType {
 - SPI extension points: `@SPI("defaultKey")`
 - Nullability: `@Nullable`, `@NotNull` (from JetBrains annotations)
 - JUnit tests: `@Test`
+- Validation: JSR-303 annotations (`@NotNull`, `@NotEmpty`, etc.)
 
 ### Generics
 - Single uppercase letters: `<T>`, `<R>`, `<P>`, `<I>`
@@ -114,23 +134,58 @@ Preferred for: constants, Preconditions (`checkNotNull`, `checkArgument`), time 
 - Validation failures throw `ViolationException`
 
 ### Testing
-- Framework: JUnit 4.12 (Surefire 3.2.5)
-- Test classes extend `TestCase`
+- Framework: JUnit 4.13.2 (Surefire 3.2.5)
+- Test coverage: JaCoCo 0.8.12
+- Test classes naming: `*Test.java`
 - Test methods: `@Test public void testMethodName()`
-- Coverage: JaCoCo 0.8.12 (runs automatically with tests)
+- Assertion library: JUnit Assert
+- Mock framework: Mockito (when needed)
 
 ### Code Quality
-- Checkstyle: Use Sun and Google bundled checks (configured in .idea/checkstyle-idea.xml)
-- Java version: Target 1.8 (CI uses Java 21)
+- Checkstyle: Use Sun and Google bundled checks
+- Java version: Target 17
 - Encoding: UTF-8
+- Line endings: LF (Unix style)
 
-### Module List
-meta-commons-logging, meta-commons-exception, meta-commons-data, meta-commons-data-model,
-meta-commons-utils, meta-core, meta-extension, meta-remoting, meta-commons-validation,
-meta-commons-serialization (with meta-commons-json-core submodule)
+### Current Module List
+```
+meta-bom/                    # ✅ 完整 - 依赖版本管理
+meta-commons-data/          # ✅ 完整 - 数据处理基础类(187个测试)
+├── base/                   # 基础数据模型和接口
+├── constants/              # 常量定义
+├── enums/                  # 枚举类型
+├── serial/                 # 序列化相关工具
+└── utils/                  # 数据处理工具类
+meta-commons-data-ext/      # ⚠️ 开发中 - 数据模型扩展
+meta-commons-logging/       # ⚠️ 开发中 - 日志记录工具
+meta-commons-utils/         # ⚠️ 开发中 - 通用工具类集合
+meta-core/                  # ⚠️ 开发中 - 核心功能模块
+meta-extension/             # ⚠️ 开发中 - 扩展机制模块
+meta-remoting/              # ⚠️ 开发中 - 远程调用模块
+meta-commons-validation/    # ⚠️ 开发中 - 数据验证工具
+meta-commons-serial/        # ✅ 完整 - 序列化框架
+├── meta-commons-serial-spi/     # SPI接口定义
+├── meta-commons-serial-fastjson/ # FastJSON实现
+├── meta-commons-serial-jackson/  # Jackson实现
+└── meta-commons-serial-lang/     # Java原生实现
+```
 
 ### Common Patterns
-- Constants interfaces (e.g., `HttpRemoteConstants`) for shared constants
+- Constants interfaces (e.g., `MetaConstants`) for shared constants
 - Builder pattern for complex object construction (e.g., `BaseResponse.Builder`)
 - Package-info.java files for package-level documentation
-- Static helper methods in utility classes (e.g., `HttpRemoteUtils`)
+- Static helper methods in utility classes (e.g., `RequestUtils`)
+- Reflection caching for performance optimization
+- SPI-based plugin architecture for extensibility
+
+### Performance Considerations
+- Use reflection caching for frequently accessed class metadata
+- Implement lazy initialization where appropriate
+- Consider thread safety in concurrent environments
+- Profile performance bottlenecks before optimization
+
+### Documentation Requirements
+- All public APIs must have Javadoc
+- Complex algorithms should have inline comments
+- Package-level documentation in package-info.java
+- README.md updates for major feature additions

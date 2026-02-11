@@ -7,5 +7,7 @@ package com.softmegatron.shared.meta.commons.data.constants;
  * @version 1.0.0
  * @since 2019-04-22 23:44
  */
-public interface MetaConstants {
+public final class MetaConstants {
+
+    public static final String SERIALIZER_PREFERRED = "meta.commons.data.serializer.preferred";
 }
