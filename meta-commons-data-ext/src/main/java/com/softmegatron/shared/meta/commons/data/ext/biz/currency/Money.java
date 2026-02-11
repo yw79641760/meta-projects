@@ -3,6 +3,7 @@ package com.softmegatron.shared.meta.commons.data.ext.biz.currency;
 import com.softmegatron.shared.meta.commons.data.base.BaseModel;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 
 /**
@@ -18,11 +19,9 @@ public class Money extends BaseModel implements Comparable<Money>{
 
     private static final String DEFAULT_CURRENCY_CODE = "CNY";
 
-    private static final int DEFAULT_ROUNDING_MODE = BigDecimal.ROUND_HALF_EVEN;
+    private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
     private static final int[] CENT_FACTORS = new int[] {1, 10, 100, 1000};
-
-    private static final String DEFAULT_LOCALE = "zh_CN";
 
     public static final Money ZERO = new Money(0);
 
@@ -56,7 +55,7 @@ public class Money extends BaseModel implements Comparable<Money>{
         this(new BigDecimal(amount), currency);
     }
 
-    public Money(String amount, Currency currency, int roundingMode) {
+    public Money(String amount, Currency currency, RoundingMode roundingMode) {
         this(new BigDecimal(amount), currency, roundingMode);
     }
 
@@ -73,7 +72,7 @@ public class Money extends BaseModel implements Comparable<Money>{
         this(amount, Currency.getInstance(DEFAULT_CURRENCY_CODE));
     }
 
-    public Money(BigDecimal amount, int roundingMode) {
+    public Money(BigDecimal amount, RoundingMode roundingMode) {
         this(amount, Currency.getInstance(DEFAULT_CURRENCY_CODE), roundingMode);
     }
 
@@ -81,14 +80,14 @@ public class Money extends BaseModel implements Comparable<Money>{
         this(amount, currency, DEFAULT_ROUNDING_MODE);
     }
 
-    public Money(BigDecimal amount, Currency currency, int roundingMode) {
+    public Money(BigDecimal amount, Currency currency, RoundingMode roundingMode) {
         this.currency = currency;
         this.cent = rounding(amount.movePointRight(currency.getDefaultFractionDigits()), roundingMode);
     }
 
     public void setAmount(BigDecimal amount) {
         if (amount != null) {
-            this.cent = rounding(amount.movePointRight(2), BigDecimal.ROUND_HALF_EVEN);
+            this.cent = rounding(amount.movePointRight(2), RoundingMode.HALF_EVEN);
         }
     }
 
@@ -194,12 +193,12 @@ public class Money extends BaseModel implements Comparable<Money>{
         return multiplyBy(val, DEFAULT_ROUNDING_MODE);
     }
 
-    public Money multiply(BigDecimal val, int roundingMode) {
+    public Money multiply(BigDecimal val, RoundingMode roundingMode) {
         BigDecimal newCent = BigDecimal.valueOf(this.cent).multiply(val);
         return newMoneyWithSameCurrency(rounding(newCent, roundingMode));
     }
 
-    public Money multiplyBy(BigDecimal val, int roundingMode) {
+    public Money multiplyBy(BigDecimal val, RoundingMode roundingMode) {
         BigDecimal newCent = BigDecimal.valueOf(this.cent).multiply(val);
         this.cent = rounding(newCent, roundingMode);
         return this;
@@ -218,7 +217,7 @@ public class Money extends BaseModel implements Comparable<Money>{
         return divide(val, DEFAULT_ROUNDING_MODE);
     }
 
-    public Money divide(BigDecimal val, int roundingMode) {
+    public Money divide(BigDecimal val, RoundingMode roundingMode) {
         BigDecimal newCent = BigDecimal.valueOf(this.cent).divide(val, roundingMode);
         return newMoneyWithSameCurrency(newCent.longValue());
     }
@@ -227,7 +226,7 @@ public class Money extends BaseModel implements Comparable<Money>{
         return divideBy(val, DEFAULT_ROUNDING_MODE);
     }
 
-    public Money divideBy(BigDecimal val, int roundingMode) {
+    public Money divideBy(BigDecimal val, RoundingMode roundingMode) {
         BigDecimal newCent = BigDecimal.valueOf(this.cent).divide(val, roundingMode);
         this.cent = newCent.longValue();
         return this;
@@ -244,7 +243,7 @@ public class Money extends BaseModel implements Comparable<Money>{
         }
     }
 
-    protected long rounding(BigDecimal val, int roundingMode) {
+    protected long rounding(BigDecimal val, RoundingMode roundingMode) {
         return val.setScale(0, roundingMode).longValue();
     }
 
