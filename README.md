@@ -25,13 +25,8 @@
 
 ```plaintext
 meta-projects/
-├── meta-bom/                    # Maven Bill of Materials (BOM) 管理依赖版本
+├── meta-bom/                   # Maven Bill of Materials (BOM) 管理依赖版本
 ├── meta-commons-data/          # 数据处理基础类库
-│   ├── base/                   # 基础数据模型和接口
-│   ├── constants/              # 常量定义
-│   ├── enums/                  # 枚举类型
-│   ├── serial/                 # 序列化相关工具
-│   └── utils/                  # 数据处理工具类
 ├── meta-commons-data-ext/      # 数据模型扩展定义
 ├── meta-commons-logging/       # 日志记录工具
 ├── meta-commons-utils/         # 通用工具类集合
@@ -39,11 +34,7 @@ meta-projects/
 ├── meta-extension/             # 扩展机制模块
 ├── meta-remoting/              # 远程调用模块
 ├── meta-commons-validation/    # 数据验证工具
-└── meta-commons-serial/        # 序列化模块
-    ├── meta-commons-serial-spi/     # 序列化SPI接口
-    ├── meta-commons-serial-fastjson/ # FastJSON序列化实现
-    ├── meta-commons-serial-jackson/  # Jackson序列化实现
-    └── meta-commons-serial-lang/     # Java原生序列化实现
+└── meta-commons-serial/        # 序列化模块, 包括spi及fastjson2、jackson和commons-lang3序列化实现
 ```
 
 ## 模块状态
@@ -51,6 +42,7 @@ meta-projects/
 | 模块名称 | 状态 | 描述 |
 |---------|------|------|
 | meta-bom | ✅ 完整 | Maven依赖版本管理 |
+| meta-commons-serial | ✅ 完整 | 序列化框架 |
 | meta-commons-data | ✅ 完整 | 核心数据处理库，包含完整的测试用例 |
 | meta-commons-data-ext | ⚠️ 开发中 | 数据模型扩展 |
 | meta-commons-logging | ⚠️ 开发中 | 日志工具 |
@@ -59,7 +51,6 @@ meta-projects/
 | meta-extension | ⚠️ 开发中 | 扩展机制 |
 | meta-remoting | ⚠️ 开发中 | 远程调用 |
 | meta-commons-validation | ⚠️ 开发中 | 验证工具 |
-| meta-commons-serial | ✅ 完整 | 序列化框架 |
 
 ## 安装指南
 
@@ -117,10 +108,10 @@ cd meta-bom && mvn clean test jacoco:report
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
-<!-- 序列化模块 -->
+<!-- 序列化模块 jackson实现 -->
 <dependency>
    <groupId>com.softmegatron.shared</groupId>
-   <artifactId>meta-commons-serial</artifactId>
+   <artifactId>meta-commons-serial-jackson</artifactId>
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
