@@ -10,7 +10,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>meta-commons-logging</artifactId>
+    <artifactId>meta-commons-extension</artifactId>
 
     <dependencies>
         <dependency>
@@ -19,18 +19,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
+            <groupId>com.softmegatron.shared</groupId>
+            <artifactId>meta-commons-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.softmegatron.shared</groupId>
+            <artifactId>meta-commons-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
         </dependency>
     </dependencies>
 
