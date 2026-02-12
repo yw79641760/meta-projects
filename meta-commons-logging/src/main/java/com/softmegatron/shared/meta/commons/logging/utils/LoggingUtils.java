@@ -44,4 +44,31 @@ public class LoggingUtils {
             return message + ", args:[" + StringUtils.join(argsList, ARG_SEPARATOR) + "]";
         }
     }
+
+    /**
+     * 判断是否是debug级别
+     * @param logger
+     * @return
+     */
+    public static boolean isDebugEnabled(Logger logger) {
+        return logger.isDebugEnabled();
+    }
+
+    /**
+     * 判断是否是info级别
+     * @param logger
+     * @return
+     */
+    public static boolean isInfoEnabled(Logger logger) {
+        return logger.isInfoEnabled();
+    }
+
+    /**
+     * 判断是否是warn级别
+     * @param logger
+     * @return
+     */
+    public static boolean isWarnEnabled(Logger logger) {
+        return logger.isWarnEnabled();
+    }
 }

@@ -14,10 +14,9 @@ This file contains build commands and code style guidelines for the Meta Project
 ### 开发中模块
 - ⚠️ **meta-commons-data-ext**: 数据模型扩展
 - ⚠️ **meta-commons-logging**: 日志记录工具
-- ⚠️ **meta-commons-utils**: 通用工具类集合
-- ⚠️ **meta-core**: 核心功能模块
-- ⚠️ **meta-extension**: 扩展机制模块
-- ⚠️ **meta-remoting**: 远程调用模块
+- ⚠️ **meta-commons-core**: 核心功能模块
+- ⚠️ **meta-commons-extension**: 扩展机制模块
+- ⚠️ **meta-commons-remoting**: 远程调用模块
 - ⚠️ **meta-commons-validation**: 数据验证工具
 
 ## Build Commands
@@ -158,10 +157,9 @@ meta-commons-data/          # ✅ 完整 - 数据处理基础类(187个测试)
 └── utils/                  # 数据处理工具类
 meta-commons-data-ext/      # ⚠️ 开发中 - 数据模型扩展
 meta-commons-logging/       # ⚠️ 开发中 - 日志记录工具
-meta-commons-utils/         # ⚠️ 开发中 - 通用工具类集合
-meta-core/                  # ⚠️ 开发中 - 核心功能模块
-meta-extension/             # ⚠️ 开发中 - 扩展机制模块
-meta-remoting/              # ⚠️ 开发中 - 远程调用模块
+meta-commons-core/                  # ⚠️ 开发中 - 核心功能模块
+meta-commons-extension/             # ⚠️ 开发中 - 扩展机制模块
+meta-commons-remoting/              # ⚠️ 开发中 - 远程调用模块
 meta-commons-validation/    # ⚠️ 开发中 - 数据验证工具
 meta-commons-serial/        # ✅ 完整 - 序列化框架
 ├── meta-commons-serial-spi/     # SPI接口定义

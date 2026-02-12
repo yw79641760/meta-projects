@@ -246,6 +246,7 @@ public class PageResponseTest {
         System.out.println("toString结果: " + result);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testEmptyPageResponseCreation() {
         PageResponse<TestEntity> response = new PageResponse<>();

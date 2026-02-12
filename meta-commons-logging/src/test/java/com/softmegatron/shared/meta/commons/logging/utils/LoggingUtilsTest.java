@@ -1,6 +1,6 @@
 package com.softmegatron.shared.meta.commons.logging.utils;
 
-import com.softmegatron.shared.meta.commons.logging.utils.LoggingUtils;import org.junit.Test;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

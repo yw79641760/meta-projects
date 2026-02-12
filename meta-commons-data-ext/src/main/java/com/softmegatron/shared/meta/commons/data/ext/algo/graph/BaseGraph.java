@@ -259,7 +259,7 @@ public abstract class BaseGraph<Vertex, VertexInfo, Edge, EdgeInfo>
         final Map<Vertex, Edge> adjacentEdgeMap = edgeMap.get(vertex);
         if (adjacentEdgeMap == null
             || adjacentEdgeMap.size() == 0) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         return adjacentEdgeMap.keySet();
     }
