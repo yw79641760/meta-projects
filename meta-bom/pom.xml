@@ -33,14 +33,14 @@
     </properties>
     
     <modules>
-        <module>../meta-commons-serial</module>
-        <module>../meta-commons-data</module>
-        <module>../meta-commons-data-ext</module>
-        <module>../meta-commons-logging</module>
-        <module>../meta-commons-core</module>
-        <module>../meta-commons-extension</module>
-        <module>../meta-commons-remoting</module>
-        <module>../meta-commons-validation</module>
+        <module>../meta-serial</module>
+        <module>../meta-data</module>
+        <module>../meta-data-ext</module>
+        <module>../meta-logging</module>
+        <module>../meta-core</module>
+        <module>../meta-extension</module>
+        <module>../meta-remoting</module>
+        <module>../meta-validation</module>
     </modules>
 
     <dependencyManagement>
@@ -48,72 +48,72 @@
             <!-- meta -->
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-serial</artifactId>
+                <artifactId>meta-serial</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-serial-spi</artifactId>
+                <artifactId>meta-serial-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-serial-fastjson</artifactId>
+                <artifactId>meta-serial-fastjson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-serial-jackson</artifactId>
+                <artifactId>meta-serial-jackson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-serial-lang</artifactId>
+                <artifactId>meta-serial-lang</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-logging</artifactId>
+                <artifactId>meta-logging</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-data</artifactId>
+                <artifactId>meta-data</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-data-ext</artifactId>
+                <artifactId>meta-data-ext</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-core</artifactId>
+                <artifactId>meta-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-extension</artifactId>
+                <artifactId>meta-extension</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-remoting</artifactId>
+                <artifactId>meta-remoting</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-remoting-api</artifactId>
+                <artifactId>meta-remoting-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-remoting-http</artifactId>
+                <artifactId>meta-remoting-http</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-remoting-dubbo</artifactId>
+                <artifactId>meta-remoting-dubbo</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- utils -->
