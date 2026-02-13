@@ -32,13 +32,13 @@ public class ExtensionFactoryTest {
     @Test
     public void testExtensionFactoryHasSPIAnnotation() {
         assertNotNull("ExtensionFactory应该有SPI注解", 
-                     ExtensionFactory.class.getAnnotation(com.softmegatron.shared.meta.commons.extension.annotation.SPI.class));
+                     ExtensionFactory.class.getAnnotation(com.softmegatron.shared.meta.commons.extension.annotation.Spi.class));
     }
 
     @Test
     public void testSPIAnnotationValue() {
-        com.softmegatron.shared.meta.commons.extension.annotation.SPI annotation = 
-            ExtensionFactory.class.getAnnotation(com.softmegatron.shared.meta.commons.extension.annotation.SPI.class);
+        com.softmegatron.shared.meta.commons.extension.annotation.Spi annotation = 
+            ExtensionFactory.class.getAnnotation(com.softmegatron.shared.meta.commons.extension.annotation.Spi.class);
         
         assertEquals("SPI注解的value应该正确", "spi", annotation.value());
         System.out.println("ExtensionFactory SPI value: " + annotation.value());

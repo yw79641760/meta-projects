@@ -18,7 +18,7 @@ import static com.softmegatron.shared.meta.commons.extension.constants.Extension
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface SPI {
+public @interface Spi {
     /**
      * 默认扩展点键值
      *

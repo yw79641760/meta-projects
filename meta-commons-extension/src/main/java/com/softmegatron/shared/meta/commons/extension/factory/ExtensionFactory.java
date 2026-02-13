@@ -1,6 +1,6 @@
 package com.softmegatron.shared.meta.commons.extension.factory;
 
-import com.softmegatron.shared.meta.commons.extension.annotation.SPI;
+import com.softmegatron.shared.meta.commons.extension.annotation.Spi;
 
 /**
  * ExtensionFactory
@@ -9,7 +9,7 @@ import com.softmegatron.shared.meta.commons.extension.annotation.SPI;
  * @version 1.0.0
  * @since 5/4/20 1:50 PM
  */
-@SPI("spi")
+@Spi("spi")
 public interface ExtensionFactory {
     /**
      * 根据扩展点接口类型及键值获取扩展
