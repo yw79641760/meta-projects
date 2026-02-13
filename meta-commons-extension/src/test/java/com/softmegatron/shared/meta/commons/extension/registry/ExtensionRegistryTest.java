@@ -1,6 +1,6 @@
 package com.softmegatron.shared.meta.commons.extension.registry;
 
-import com.softmegatron.shared.meta.commons.extension.annotation.SPI;
+import com.softmegatron.shared.meta.commons.extension.annotation.Spi;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
  */
 public class ExtensionRegistryTest {
 
-    @SPI("testExtension")
+    @Spi("testExtension")
     private interface TestExtension {
     }
 

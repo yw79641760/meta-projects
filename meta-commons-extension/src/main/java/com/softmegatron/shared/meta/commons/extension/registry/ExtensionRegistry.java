@@ -1,6 +1,6 @@
 package com.softmegatron.shared.meta.commons.extension.registry;
 
-import com.softmegatron.shared.meta.commons.extension.annotation.SPI;
+import com.softmegatron.shared.meta.commons.extension.annotation.Spi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +42,13 @@ public class ExtensionRegistry {
             LOGGER.error("Invalid class found in getExtensionLoader. [class={}]", clazz);
             throw new IllegalArgumentException("Invalid clazz found in getExtensionLoader.");
         }
-        if (!clazz.isAnnotationPresent(SPI.class)) {
+        if (!clazz.isAnnotationPresent(Spi.class)) {
             LOGGER.error("Empty required annotation found in getExtensionLoader. [class={}]", clazz);
             throw new IllegalArgumentException("Empty required annotation found in getExtensionLoader.");
         }
-        ExtensionLoader<T> extensionLoader = (ExtensionLoader<T>) EXTENSION_LOADER_CACHE.get(clazz);
-        if (extensionLoader != null) {
-            return extensionLoader;
-        }
-        EXTENSION_LOADER_CACHE.putIfAbsent(clazz, new ExtensionLoader<>(clazz));
-        return (ExtensionLoader<T>) EXTENSION_LOADER_CACHE.get(clazz);
+        ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADER_CACHE.computeIfAbsent(clazz, cls -> new ExtensionLoader<>(cls));
+        // 同步初始化，防止重复
+        loader.initialize();
+        return loader;
     }
 }

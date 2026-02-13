@@ -15,17 +15,17 @@ import static org.junit.Assert.assertTrue;
  * @date 2026/2/6 16:00
  * @since 1.0.0
  */
-public class SPITest {
+public class SpiTest {
 
-    @SPI("testExtension")
+    @Spi("testExtension")
     private static class TestExtension {
     }
 
-    @SPI
+    @Spi
     private static class DefaultExtension {
     }
 
-    @SPI(value = "customValue", path = "custom/path")
+    @Spi(value = "customValue", path = "custom/path")
     private static class CustomExtension {
     }
 
@@ -35,12 +35,12 @@ public class SPITest {
 
     @Test
     public void testSPIAnnotationExists() {
-        assertNotNull("SPI注解应该存在", TestExtension.class.getAnnotation(SPI.class));
+        assertNotNull("SPI注解应该存在", TestExtension.class.getAnnotation(Spi.class));
     }
 
     @Test
     public void testSPIAnnotationValue() {
-        SPI annotation = TestExtension.class.getAnnotation(SPI.class);
+        Spi annotation = TestExtension.class.getAnnotation(Spi.class);
         String value = annotation.value();
         
         assertEquals("value应该正确", "testExtension", value);
@@ -49,7 +49,7 @@ public class SPITest {
 
     @Test
     public void testSPIAnnotationDefaultPath() {
-        SPI annotation = TestExtension.class.getAnnotation(SPI.class);
+        Spi annotation = TestExtension.class.getAnnotation(Spi.class);
         String path = annotation.path();
         
         assertEquals("path默认值应该正确", "META-INF/extensions", path);
@@ -58,7 +58,7 @@ public class SPITest {
 
     @Test
     public void testSPIAnnotationEmptyValue() {
-        SPI annotation = DefaultExtension.class.getAnnotation(SPI.class);
+        Spi annotation = DefaultExtension.class.getAnnotation(Spi.class);
         String value = annotation.value();
         
         assertEquals("value默认值应该为空字符串", "", value);
@@ -67,7 +67,7 @@ public class SPITest {
 
     @Test
     public void testSPIAnnotationCustomPath() {
-        SPI annotation = CustomExtension.class.getAnnotation(SPI.class);
+        Spi annotation = CustomExtension.class.getAnnotation(Spi.class);
         String path = annotation.path();
         
         assertEquals("自定义path应该正确", "custom/path", path);
@@ -76,14 +76,14 @@ public class SPITest {
 
     @Test
     public void testSPIAnnotationRetention() {
-        SPI annotation = TestExtension.class.getAnnotation(SPI.class);
+        Spi annotation = TestExtension.class.getAnnotation(Spi.class);
         
         assertNotNull("注解应该在运行时可访问", annotation);
     }
 
     @Test
     public void testSPIAnnotationCustomValue() {
-        SPI annotation = CustomExtension.class.getAnnotation(SPI.class);
+        Spi annotation = CustomExtension.class.getAnnotation(Spi.class);
         String value = annotation.value();
         
         assertEquals("自定义value应该正确", "customValue", value);
@@ -92,21 +92,21 @@ public class SPITest {
 
     @Test
     public void testSPIAnnotationInterface() {
-        assertTrue("SPI应该是注解接口", SPI.class.isAnnotation());
+        assertTrue("SPI应该是注解接口", Spi.class.isAnnotation());
     }
 
     @Test
     public void testSPIAnnotationTypeUsage() {
-        SPI annotation = TestExtension.class.getAnnotation(SPI.class);
+        Spi annotation = TestExtension.class.getAnnotation(Spi.class);
         
         assertNotNull("SPI注解应该能应用于类上", annotation);
     }
 
     @Test
     public void testSPIAnnotationMultipleClasses() {
-        SPI testAnnotation = TestExtension.class.getAnnotation(SPI.class);
-        SPI defaultAnnotation = DefaultExtension.class.getAnnotation(SPI.class);
-        SPI customAnnotation = CustomExtension.class.getAnnotation(SPI.class);
+        Spi testAnnotation = TestExtension.class.getAnnotation(Spi.class);
+        Spi defaultAnnotation = DefaultExtension.class.getAnnotation(Spi.class);
+        Spi customAnnotation = CustomExtension.class.getAnnotation(Spi.class);
         
         assertNotNull("TestExtension应该有SPI注解", testAnnotation);
         assertNotNull("DefaultExtension应该有SPI注解", defaultAnnotation);
