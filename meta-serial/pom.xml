@@ -18,10 +18,10 @@
     </properties>
 
     <modules>
-        <module>meta-commons-serial-spi</module>
-        <module>meta-commons-serial-fastjson</module>
-        <module>meta-commons-serial-jackson</module>
-        <module>meta-commons-serial-lang</module>
+        <module>meta-serial-spi</module>
+        <module>meta-serial-fastjson</module>
+        <module>meta-serial-jackson</module>
+        <module>meta-serial-lang</module>
     </modules>
 
     <dependencyManagement>
@@ -43,7 +43,7 @@
             </dependency>
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
-                <artifactId>meta-commons-serial-spi</artifactId>
+                <artifactId>meta-serial-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

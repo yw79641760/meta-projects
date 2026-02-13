@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>com.softmegatron.shared</groupId>
-            <artifactId>meta-commons-serial-spi</artifactId>
+            <artifactId>meta-serial-spi</artifactId>
         </dependency>
     </dependencies>
 

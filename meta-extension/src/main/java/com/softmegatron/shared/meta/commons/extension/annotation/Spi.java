@@ -44,5 +44,5 @@ public @interface Spi {
      * 优先级，数值越低，优先级越高
      * @return
      */
-    int priority();
+    int priority() default 0;
 }

@@ -1,7 +1,9 @@
-package com.softmegatron.shared.meta.commons.extension.registry;
+package com.softmegatron.shared.meta.commons.extension.loader;
 
 import com.softmegatron.shared.meta.commons.core.utils.ClassUtils;
 import com.softmegatron.shared.meta.commons.extension.annotation.Spi;
+import com.softmegatron.shared.meta.commons.extension.exception.ExtensionException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +15,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.HashSet;
@@ -31,13 +34,9 @@ public class ExtensionLoader<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionLoader.class);
     /**
-     * key -> extensionType
-     */
-    private final Map<String, Class<?>> EXTENSION_TYPE_CACHE = new ConcurrentHashMap<>();
-    /**
      * key -> extensionInstance
      */
-    private final Map<String, Object> EXTENSION_INSTANCE_CACHE = new ConcurrentHashMap<>();
+    private volatile Map<String, Object> EXTENSION_INSTANCE_CACHE = new ConcurrentHashMap<>();
     /**
      * spi类型
      */
@@ -109,8 +108,10 @@ public class ExtensionLoader<T> {
 
         } catch (IOException ioe) {
             LOGGER.error("Failed to load extension. [clazz={}]", clazz.getSimpleName(), ioe);
+            throw new ExtensionException("Failed to load extension.", ioe);
         } catch (Exception e) {
             LOGGER.error("Failed to load extension. [clazz={}]", clazz.getSimpleName(), e);
+            throw new ExtensionException("Failed to load extension.", e);
         }
     }
 
@@ -123,13 +124,13 @@ public class ExtensionLoader<T> {
 
         if (url == null || url.getPath() == null || url.getPath().isEmpty()) {
             LOGGER.error("Invalid extension resource path found. [url={}]", url);
-            throw new IllegalArgumentException("Invalid extension resource path found.");
+            throw new ExtensionException("Invalid extension resource path found.");
         }
 
         if (!SUPPORTED_PROTOCOL.contains(url.getProtocol())) {
             LOGGER.error("Unsupported extension protocol found. [protocol={}][url={}]",
                     url.getProtocol(), url.toString());
-            throw new UnsupportedOperationException("Unsupported extension protocol found.");
+            throw new ExtensionException("Unsupported extension protocol found.");
         }
 
         // 解析配置文件
@@ -139,7 +140,7 @@ public class ExtensionLoader<T> {
             processProperties(properties, url);
         } catch (IOException ioe) {
             LOGGER.error("Failed to load extension file. [url={}]", url, ioe);
-            throw new IllegalStateException("Failed to load extension file. ", ioe);
+            throw new ExtensionException("Failed to load extension file. ", ioe);
         }
     }
 
@@ -157,7 +158,7 @@ public class ExtensionLoader<T> {
                 } catch (Exception e) {
                     LOGGER.error("Failed to load extension class. [key={}][classPath={}]",
                             key, classPath, e);
-                    throw new IllegalStateException("Failed to load extension class.", e);
+                    throw new ExtensionException("Failed to load extension class.", e);
                 }
             }
         });
@@ -174,35 +175,37 @@ public class ExtensionLoader<T> {
             || classPath == null || classPath.trim().isEmpty()) {
             LOGGER.error("Invalid extension class key and path found. [key={}][classPath={}]", 
                 key, classPath);
-            throw new IllegalArgumentException("Invalid extension class key and path found.");
+            throw new ExtensionException("Invalid extension class key and path found.");
         }
         try {
             Class<?> subClass = Class.forName(classPath.trim());
             // 类型检查
             if (!clazz.isAssignableFrom(subClass)) {
                 LOGGER.error("Extension type and subClass mismatch found. [clazz={}][subClass={}]", clazz, subClass);
-                throw new IllegalStateException("Extension type and subClass mismatch found.");
+                throw new ExtensionException("Extension type and subClass mismatch found.");
             }
 
             // 检查重复实现
-            Class<?> oldClass = EXTENSION_TYPE_CACHE.get(key);
+            Class<?> oldClass = Optional.ofNullable(key)
+                    .map(k -> EXTENSION_INSTANCE_CACHE.get(k))
+                    .map(Object::getClass)
+                    .orElse(null);
             if (oldClass == null) {
-                EXTENSION_TYPE_CACHE.put(key, subClass);
                 try {
                     Object instance = ClassUtils.newInstance(subClass);
                     EXTENSION_INSTANCE_CACHE.put(key, instance);
                 } catch (Exception e) {
                     LOGGER.error("Failed to instantiate extension class. [classPath={}]", classPath, e);
-                    throw new IllegalStateException("Failed to instantiate extension class.");
+                    throw new ExtensionException("Failed to instantiate extension class.", e);
                 }
             } else if (oldClass != subClass) {
                 LOGGER.error("Duplicate extension subClass found. [clazz={}][oldClass={}][subClass={}]",
                          clazz, oldClass, subClass);
-                throw new IllegalStateException("Duplicate extension subClass found.");
+                throw new ExtensionException("Duplicate extension subClass found.");
             }
         } catch (Exception e) {
             LOGGER.error("Failed to load extension class. [key={}][classPath={}]", key, classPath, e);
-            throw new IllegalStateException("Failed to load extension class.");
+            throw new ExtensionException("Failed to load extension class.", e);
         }
     }
 
@@ -223,10 +226,10 @@ public class ExtensionLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public T getExtension(String key) {
+        initialize();
         if (key == null) {
             return null;
         }
-        initialize();
         return (T) EXTENSION_INSTANCE_CACHE.get(key);
     }
 
@@ -238,10 +241,10 @@ public class ExtensionLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public T getExtensionOrDefault(String key) {
+        initialize();
         if (key == null) {
             return null;
         }
-        initialize();
         return (T) EXTENSION_INSTANCE_CACHE.getOrDefault(key, getDefaultExtension());
     }
 
@@ -255,6 +258,7 @@ public class ExtensionLoader<T> {
         if (key == null) {
             return false;
         }
+        initialize();
         return EXTENSION_INSTANCE_CACHE.containsKey(key);
     }
 
@@ -281,6 +285,5 @@ public class ExtensionLoader<T> {
      */
     public synchronized void clearCache() {
         EXTENSION_INSTANCE_CACHE.clear();
-        EXTENSION_TYPE_CACHE.clear();
     }
 }

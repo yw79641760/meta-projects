@@ -1,4 +1,4 @@
-package com.softmegatron.shared.meta.commons.extension.registry;
+package com.softmegatron.shared.meta.commons.extension.loader;
 
 import com.softmegatron.shared.meta.commons.extension.annotation.Spi;
 import org.slf4j.Logger;
@@ -8,21 +8,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ExtensionRegistry
+ * ExtensionManager
  *
  * @author <a href="mailto:wei.yan@softmegatron.com">wei.yan</a>
  * @version 1.0.0
  * @since 5/4/20 2:22 PM
  */
-public class ExtensionRegistry {
+public class ExtensionManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionManager.class);
     /**
      * spi -> extensionLoader
      */
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADER_CACHE = new ConcurrentHashMap<>();
 
-    private ExtensionRegistry() {
+    private ExtensionManager() {
     }
 
     /**

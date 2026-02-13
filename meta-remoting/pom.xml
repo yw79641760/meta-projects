@@ -14,9 +14,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>meta-commons-remoting-api</module>
-        <module>meta-commons-remoting-http</module>
-        <module>meta-commons-remoting-dubbo</module>
+        <module>meta-remoting-api</module>
+        <module>meta-remoting-http</module>
+        <module>meta-remoting-dubbo</module>
     </modules>
 
     <dependencyManagement>
