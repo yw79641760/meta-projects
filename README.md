@@ -127,8 +127,8 @@ cd meta-bom && mvn clean test jacoco:report
 #### 数据处理示例
 
 ```java
-import com.softmegatron.shared.meta.commons.data.base.PageRequest;
-import com.softmegatron.shared.meta.commons.data.utils.RequestUtils;
+import com.softmegatron.shared.meta.data.base.PageRequest;
+import com.softmegatron.shared.meta.data.utils.RequestUtils;
 
 public class DataExample {
     public static void main(String[] args) {
@@ -150,8 +150,8 @@ public class DataExample {
 #### 序列化示例
 
 ```java
-import com.softmegatron.shared.meta.commons.data.serial.DefaultObjectSerializer;
-import com.softmegatron.shared.meta.commons.data.base.BaseSerializable;
+import com.softmegatron.shared.meta.data.serial.DefaultObjectSerializer;
+import com.softmegatron.shared.meta.data.base.BaseSerializable;
 
 public class SerializationExample {
     public static void main(String[] args) {
