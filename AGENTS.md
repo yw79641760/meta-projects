@@ -7,17 +7,17 @@ This file contains build commands and code style guidelines for the Meta Project
 当前项目包含以下模块，其中部分模块已完成开发，部分仍在开发中：
 
 ### 已完成模块
-- ✅ **meta-commons-data**: 核心数据处理库，包含完整的测试用例(187个测试)
-- ✅ **meta-commons-serial**: 序列化框架，包含SPI接口和多种实现
+- ✅ **meta-data**: 核心数据处理库，包含完整的测试用例(187个测试)
+- ✅ **meta-serial**: 序列化框架，包含SPI接口和多种实现
 - ✅ **meta-bom**: Maven依赖版本管理
 
 ### 开发中模块
-- ⚠️ **meta-commons-data-ext**: 数据模型扩展
-- ⚠️ **meta-commons-logging**: 日志记录工具
-- ⚠️ **meta-commons-core**: 核心功能模块
-- ⚠️ **meta-commons-extension**: 扩展机制模块
-- ⚠️ **meta-commons-remoting**: 远程调用模块
-- ⚠️ **meta-commons-validation**: 数据验证工具
+- ⚠️ **meta-data-ext**: 数据模型扩展
+- ⚠️ **meta-logging**: 日志记录工具
+- ⚠️ **meta-core**: 核心功能模块
+- ⚠️ **meta-extension**: 扩展机制模块
+- ⚠️ **meta-remoting**: 远程调用模块
+- ⚠️ **meta-validation**: 数据验证工具
 
 ## Build Commands
 
@@ -149,23 +149,23 @@ Preferred for: constants, Preconditions (`checkNotNull`, `checkArgument`), time 
 ### Current Module List
 ```
 meta-bom/                    # ✅ 完整 - 依赖版本管理
-meta-commons-data/          # ✅ 完整 - 数据处理基础类(187个测试)
+meta-data/          # ✅ 完整 - 数据处理基础类(187个测试)
 ├── base/                   # 基础数据模型和接口
 ├── constants/              # 常量定义
 ├── enums/                  # 枚举类型
 ├── serial/                 # 序列化相关工具
 └── utils/                  # 数据处理工具类
-meta-commons-data-ext/      # ⚠️ 开发中 - 数据模型扩展
-meta-commons-logging/       # ⚠️ 开发中 - 日志记录工具
-meta-commons-core/                  # ⚠️ 开发中 - 核心功能模块
-meta-commons-extension/             # ⚠️ 开发中 - 扩展机制模块
-meta-commons-remoting/              # ⚠️ 开发中 - 远程调用模块
-meta-commons-validation/    # ⚠️ 开发中 - 数据验证工具
-meta-commons-serial/        # ✅ 完整 - 序列化框架
-├── meta-commons-serial-spi/     # SPI接口定义
-├── meta-commons-serial-fastjson/ # FastJSON实现
-├── meta-commons-serial-jackson/  # Jackson实现
-└── meta-commons-serial-lang/     # Java原生实现
+meta-data-ext/      # ⚠️ 开发中 - 数据模型扩展
+meta-logging/       # ⚠️ 开发中 - 日志记录工具
+meta-core/                  # ⚠️ 开发中 - 核心功能模块
+meta-extension/             # ⚠️ 开发中 - 扩展机制模块
+meta-remoting/              # ⚠️ 开发中 - 远程调用模块
+meta-validation/    # ⚠️ 开发中 - 数据验证工具
+meta-serial/        # ✅ 完整 - 序列化框架
+├── meta-serial-spi/     # SPI接口定义
+├── meta-serial-fastjson/ # FastJSON实现
+├── meta-serial-jackson/  # Jackson实现
+└── meta-serial-lang/     # Java原生实现
 ```
 
 ### Common Patterns

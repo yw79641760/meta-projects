@@ -27,14 +27,14 @@ public class ClassUtils {
             // No thread context class loader -> use class loader of this class.
             // cl = org.springframework.util.ClassUtils.class.getClassLoader();
             cl = ClassUtils.class.getClassLoader();
-             if (cl == null) {
+            if (cl == null) {
                 // getClassLoader() returning null indicates the bootstrap ClassLoader
                 try {
                     cl = ClassLoader.getSystemClassLoader();
                 } catch (Throwable ex) {
                     // Cannnot access system ClassLoader - oh well, maybe the caller can live with null...
                 }
-             }
+            }
         }
         return cl;
     }
