@@ -120,10 +120,10 @@ public class MoneyTest {
     }
 
     @Test
-    public void testSubstract() {
+    public void testSubtract() {
         Money money1 = new Money("20.00");
         Money money2 = new Money("10.50");
-        Money result = money1.substract(money2);
+        Money result = money1.subtract(money2);
         assertEquals("20.00-10.50应为9.50", BigDecimal.valueOf(950, 2), result.getAmount());
     }
 
@@ -174,10 +174,10 @@ public class MoneyTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSubstractWithDifferentCurrency() {
+    public void testSubtractWithDifferentCurrency() {
         Money money1 = new Money("20.00", CNY);
         Money money2 = new Money("10.50", Currency.getInstance("USD"));
-        money1.substract(money2);
+        money1.subtract(money2);
     }
 
     @Test
