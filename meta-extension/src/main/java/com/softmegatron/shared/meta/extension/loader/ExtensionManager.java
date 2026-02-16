@@ -3,54 +3,124 @@ package com.softmegatron.shared.meta.extension.loader;
 import com.softmegatron.shared.meta.extension.annotation.Spi;
 import com.softmegatron.shared.meta.extension.exception.ExtensionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
- * ExtensionManager
+ * 扩展管理器
+ * <p>
+ * 统一的扩展点入口，提供静态方法获取扩展实例。
+ * </p>
+ *
+ * <pre>
+ * 使用示例：
+ * // 获取指定扩展
+ * MyService service = ExtensionManager.getExtension(MyService.class, "http");
+ *
+ * // 获取默认扩展
+ * MyService defaultService = ExtensionManager.getDefaultExtension(MyService.class);
+ *
+ * // 安全获取（优先指定 key，fallback 到默认）
+ * MyService service = ExtensionManager.getExtensionOrDefault(MyService.class, "dubbo");
+ * </pre>
  *
  * @author <a href="mailto:wei.yan@softmegatron.com">wei.yan</a>
  * @version 1.0.0
- * @since 5/4/20 2:22 PM
+ * @since 1.0.0
  */
-public class ExtensionManager {
+public final class ExtensionManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionManager.class);
-    /**
-     * spi -> extensionLoader
-     */
-    private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADER_CACHE = new ConcurrentHashMap<>();
+    /** 扩展点类型 -> ExtensionLoader 缓存 */
+    private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> LOADER_CACHE = new ConcurrentHashMap<>();
 
     private ExtensionManager() {
     }
 
     /**
-     * 获取指定类型的扩展加载器
+     * 获取指定扩展实现
      *
-     * @param clazz
-     * @param <T>
-     * @return
+     * @param type 扩展点接口类型
+     * @param key  扩展键值
+     * @param <T>  扩展点类型
+     * @return 扩展实例，不存在则返回 null
+     * @throws ExtensionException 如果扩展点配置无效
+     */
+    public static <T> T getExtension(Class<T> type, String key) {
+        return getLoader(type).getExtension(key);
+    }
+
+    /**
+     * 获取默认扩展实现
+     *
+     * @param type 扩展点接口类型
+     * @param <T>  扩展点类型
+     * @return 默认扩展实例，不存在则返回 null
+     * @throws ExtensionException 如果扩展点配置无效
+     */
+    public static <T> T getDefaultExtension(Class<T> type) {
+        return getLoader(type).getDefaultExtension();
+    }
+
+    /**
+     * 获取指定扩展，不存在则返回默认扩展
+     *
+     * @param type 扩展点接口类型
+     * @param key  扩展键值
+     * @param <T>  扩展点类型
+     * @return 扩展实例，都不存在则返回 null
+     * @throws ExtensionException 如果扩展点配置无效
+     */
+    public static <T> T getExtensionOrDefault(Class<T> type, String key) {
+        return getLoader(type).getExtensionOrDefault(key);
+    }
+
+    /**
+     * 检查扩展是否存在
+     *
+     * @param type 扩展点接口类型
+     * @param key  扩展键值
+     * @param <T>  扩展点类型
+     * @return 是否存在
+     * @throws ExtensionException 如果扩展点配置无效
+     */
+    public static <T> boolean hasExtension(Class<T> type, String key) {
+        return getLoader(type).hasExtension(key);
+    }
+
+    /**
+     * 获取所有扩展键值
+     *
+     * @param type 扩展点接口类型
+     * @param <T>  扩展点类型
+     * @return 扩展键值集合
+     * @throws ExtensionException 如果扩展点配置无效
+     */
+    public static <T> Set<String> getExtensionKeys(Class<T> type) {
+        return getLoader(type).getExtensionKeys();
+    }
+
+    /**
+     * 获取或创建 ExtensionLoader
      */
     @SuppressWarnings("unchecked")
-    public static <T> ExtensionLoader<T> getExtensionLoader(final Class<T> clazz) {
-        if (clazz == null) {
-            LOGGER.error("Empty class found in getExtensionLoader. [clazz={}]", clazz);
-            throw new ExtensionException("Empty class found in getExtensionLoader.");
+    private static <T> ExtensionLoader<T> getLoader(Class<T> type) {
+        validateType(type);
+        return (ExtensionLoader<T>) LOADER_CACHE.computeIfAbsent(type, ExtensionLoader::new);
+    }
+
+    /**
+     * 校验扩展点类型
+     */
+    private static <T> void validateType(Class<T> type) {
+        if (type == null) {
+            throw new ExtensionException("Extension type cannot be null");
         }
-        if (!clazz.isInterface()) {
-            LOGGER.error("Invalid class found in getExtensionLoader. [class={}]", clazz);
-            throw new ExtensionException("Invalid clazz found in getExtensionLoader.");
+        if (!type.isInterface()) {
+            throw new ExtensionException("Extension type must be an interface: " + type.getName());
         }
-        if (!clazz.isAnnotationPresent(Spi.class)) {
-            LOGGER.error("Empty required annotation found in getExtensionLoader. [class={}]", clazz);
-            throw new ExtensionException("Empty required annotation found in getExtensionLoader.");
+        if (!type.isAnnotationPresent(Spi.class)) {
+            throw new ExtensionException("Extension type must be annotated with @Spi: " + type.getName());
         }
-        ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADER_CACHE.computeIfAbsent(clazz, cls -> new ExtensionLoader<>(cls));
-        // 同步初始化，防止重复
-        loader.initialize();
-        return loader;
     }
 }
