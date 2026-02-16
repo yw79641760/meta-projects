@@ -2,288 +2,264 @@ package com.softmegatron.shared.meta.extension.loader;
 
 import com.softmegatron.shared.meta.core.utils.ClassUtils;
 import com.softmegatron.shared.meta.extension.annotation.Spi;
+import com.softmegatron.shared.meta.extension.enums.ExtensionScope;
 import com.softmegatron.shared.meta.extension.exception.ExtensionException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.softmegatron.shared.meta.extension.enums.ExtensionProtocol.SUPPORTED_PROTOCOL;
-
 /**
- * ExtensionLoader
+ * 扩展加载器
+ * <p>
+ * 负责加载指定扩展点接口的所有实现，支持单例和多例模式。
+ * </p>
  *
+ * @param <T> 扩展点接口类型
  * @author <a href="mailto:wei.yan@softmegatron.com">wei.yan</a>
  * @version 1.0.0
- * @since 5/4/20 1:58 PM
+ * @since 1.0.0
  */
 public class ExtensionLoader<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionLoader.class);
-    /**
-     * key -> extensionInstance
-     */
-    private final Map<String, Object> EXTENSION_INSTANCE_CACHE = new ConcurrentHashMap<>();
-    /**
-     * spi类型
-     */
-    private final Class<T> clazz;
-    /**
-     * spi标注
-     */
+
+    /** 扩展点接口类型 */
+    private final Class<T> type;
+
+    /** Spi 注解配置 */
     private final Spi spi;
-    /**
-     * 是否已经初始化
-     */
-    private volatile boolean initialized = false;
 
-    public ExtensionLoader(Class<T> clazz) {
-        this.clazz = clazz;
-        this.spi = clazz.getDeclaredAnnotation(Spi.class);
-    }
+    /** 单例缓存：key -> 实例 */
+    private final Map<String, T> singletonCache = new ConcurrentHashMap<>();
 
-    /**
-     * 同步初始化
-     */
-    public void initialize() {
-        if (initialized) {
-            return;
-        }
-        synchronized (this) {
-            if (initialized) {
-                return;
-            }
-            loadExtensions();
-            initialized = true;
-        }
-    }
+    /** 类定义缓存：key -> Class */
+    private final Map<String, Class<? extends T>> classCache = new ConcurrentHashMap<>();
+
+    /** 加载状态 */
+    private volatile boolean loaded = false;
+
+    /** 加载锁 */
+    private final Object loadLock = new Object();
 
     /**
-     * 加载扩展的所有实现
-     * <p>
-     * 失败情况暂时仅打日志，不阻断
-     * </p>
-     */
-    private void loadExtensions() {
-        try {
-            long startTime = System.currentTimeMillis();
-            String fileName = spi.path() + File.separator + clazz.getName();
-            ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
-
-            // 一次性获取所有资源URL
-            Enumeration<URL> urls = classLoader.getResources(fileName);
-            List<URL> urlList = Collections.list(urls);
-
-            if (urlList.isEmpty()) {
-                LOGGER.warn("Empty extension configuration found for extension. [className={}][fileName={}]",
-                        clazz.getSimpleName(), fileName);
-                return;
-            }
-
-            // 批量处理所有配置文件
-            for (URL url : urlList) {
-                try {
-                    loadResource(url);
-                } catch (Exception e) {
-                    LOGGER.error("Failed to load extension resource from URL. [class={}][url={}]",
-                            clazz.getSimpleName(), url, e);
-                }
-            }
-            Long elapsedTime = System.currentTimeMillis() - startTime;
-            LOGGER.info("Finished to load extensions. [class={}][size={}][elapsedTime={}]",
-                    clazz.getSimpleName(), EXTENSION_INSTANCE_CACHE.size(), elapsedTime);
-
-        } catch (IOException ioe) {
-            LOGGER.error("Failed to load extension. [clazz={}]", clazz.getSimpleName(), ioe);
-            throw new ExtensionException("Failed to load extension.", ioe);
-        } catch (Exception e) {
-            LOGGER.error("Failed to load extension. [clazz={}]", clazz.getSimpleName(), e);
-            throw new ExtensionException("Failed to load extension.", e);
-        }
-    }
-
-    /**
-     * 加载配置文件
+     * 构造函数
      *
-     * @param url 配置文件URL
+     * @param type 扩展点接口类型
      */
-    private void loadResource(URL url) {
-
-        if (url == null || url.getPath() == null || url.getPath().isEmpty()) {
-            LOGGER.error("Invalid extension resource path found. [url={}]", url);
-            throw new ExtensionException("Invalid extension resource path found.");
-        }
-
-        if (!SUPPORTED_PROTOCOL.contains(url.getProtocol())) {
-            LOGGER.error("Unsupported extension protocol found. [protocol={}][url={}]",
-                    url.getProtocol(), url.toString());
-            throw new ExtensionException("Unsupported extension protocol found.");
-        }
-
-        // 解析配置文件
-        Properties properties = new Properties();
-        try (InputStream inputStream = url.openStream()) {
-            properties.load(inputStream);
-            processProperties(properties, url);
-        } catch (IOException ioe) {
-            LOGGER.error("Failed to load extension file. [url={}]", url, ioe);
-            throw new ExtensionException("Failed to load extension file. ", ioe);
-        }
+    ExtensionLoader(Class<T> type) {
+        this.type = type;
+        this.spi = type.getAnnotation(Spi.class);
     }
 
     /**
-     * 处理配置属性
-     */
-    private void processProperties(Properties properties, URL url) {
-        properties.forEach((k, v) -> {
-            String key = (String) k;
-            String classPath = (String) v;
-            if (key != null && !key.trim().isEmpty()
-                    && classPath != null && !classPath.trim().isEmpty()) {
-                try {
-                    loadClass(key.trim(), classPath.trim());
-                } catch (Exception e) {
-                    LOGGER.error("Failed to load extension class. [key={}][classPath={}]",
-                            key, classPath, e);
-                    throw new ExtensionException("Failed to load extension class.", e);
-                }
-            }
-        });
-    }
-
-    /**
-     * 加载扩展类型及实现类
+     * 获取指定扩展实现
      *
-     * @param key       扩展键值
-     * @param classPath 类路径
+     * @param key 扩展键值
+     * @return 扩展实例，不存在则返回 null
      */
-    private void loadClass(final String key, final String classPath) {
-        if (key == null || key.trim().isEmpty()
-            || classPath == null || classPath.trim().isEmpty()) {
-            LOGGER.error("Invalid extension class key and path found. [key={}][classPath={}]", 
-                key, classPath);
-            throw new ExtensionException("Invalid extension class key and path found.");
+    public T getExtension(String key) {
+        if (key == null || key.isEmpty()) {
+            return null;
         }
-        try {
-            Class<?> subClass = Class.forName(classPath.trim());
-            // 类型检查
-            if (!clazz.isAssignableFrom(subClass)) {
-                LOGGER.error("Extension type and subClass mismatch found. [clazz={}][subClass={}]", clazz, subClass);
-                throw new ExtensionException("Extension type and subClass mismatch found.");
-            }
-
-            // 检查重复实现
-            Class<?> oldClass = Optional.ofNullable(key)
-                    .map(k -> EXTENSION_INSTANCE_CACHE.get(k))
-                    .map(Object::getClass)
-                    .orElse(null);
-            if (oldClass == null) {
-                try {
-                    Object instance = ClassUtils.newInstance(subClass);
-                    EXTENSION_INSTANCE_CACHE.put(key, instance);
-                } catch (Exception e) {
-                    LOGGER.error("Failed to instantiate extension class. [classPath={}]", classPath, e);
-                    throw new ExtensionException("Failed to instantiate extension class.", e);
-                }
-            } else if (oldClass != subClass) {
-                LOGGER.error("Duplicate extension subClass found. [clazz={}][oldClass={}][subClass={}]",
-                         clazz, oldClass, subClass);
-                throw new ExtensionException("Duplicate extension subClass found.");
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to load extension class. [key={}][classPath={}]", key, classPath, e);
-            throw new ExtensionException("Failed to load extension class.", e);
-        }
+        loadExtensions();
+        return getOrCreateInstance(key);
     }
 
     /**
-     * 获取默认的扩展实现
+     * 获取默认扩展实现
      *
-     * @return 默认扩展实例，如果不存在则返回null
+     * @return 默认扩展实例，不存在则返回 null
      */
     public T getDefaultExtension() {
         return getExtension(spi.value());
     }
 
     /**
-     * 获取指定键值的扩展实现
+     * 获取指定扩展，不存在则返回默认扩展
      *
      * @param key 扩展键值
-     * @return 扩展实例，如果不存在则返回null
+     * @return 扩展实例，都不存在则返回 null
      */
-    @SuppressWarnings("unchecked")
-    public T getExtension(String key) {
-        initialize();
-        if (key == null) {
-            return null;
-        }
-        return (T) EXTENSION_INSTANCE_CACHE.get(key);
-    }
-
-    /**
-     * 获取指定键值的扩展实现，否则获取默认的扩展实现
-     * 
-     * @param key 扩展键值
-     * @return 扩展实例，如果都不存在则返回null
-     */
-    @SuppressWarnings("unchecked")
     public T getExtensionOrDefault(String key) {
-        initialize();
-        if (key == null) {
-            return null;
+        T extension = getExtension(key);
+        if (extension != null) {
+            return extension;
         }
-        return (T) EXTENSION_INSTANCE_CACHE.getOrDefault(key, getDefaultExtension());
+        return getDefaultExtension();
     }
 
     /**
-     * 检查是否包含指定键值的扩展
-     * 
+     * 检查扩展是否存在
+     *
      * @param key 扩展键值
      * @return 是否存在
      */
     public boolean hasExtension(String key) {
-        if (key == null) {
+        if (key == null || key.isEmpty()) {
             return false;
         }
-        initialize();
-        return EXTENSION_INSTANCE_CACHE.containsKey(key);
+        loadExtensions();
+        return classCache.containsKey(key);
     }
 
     /**
-     * 获取所有已加载的扩展键值
-     * 
+     * 获取所有扩展键值
+     *
      * @return 扩展键值集合
      */
     public Set<String> getExtensionKeys() {
-        return new HashSet<>(EXTENSION_INSTANCE_CACHE.keySet());
+        loadExtensions();
+        return new HashSet<>(classCache.keySet());
     }
 
     /**
-     * 获取缓存大小
-     * 
-     * @return 缓存中的扩展数量
+     * 加载扩展配置
      */
-    public int getCacheSize() {
-        return EXTENSION_INSTANCE_CACHE.size();
+    private void loadExtensions() {
+        if (loaded) {
+            return;
+        }
+        synchronized (loadLock) {
+            if (loaded) {
+                return;
+            }
+            doLoadExtensions();
+            loaded = true;
+        }
     }
 
     /**
-     * 清理缓存（谨慎使用）
+     * 执行扩展加载
      */
-    public synchronized void clearCache() {
-        EXTENSION_INSTANCE_CACHE.clear();
+    private void doLoadExtensions() {
+        String fileName = spi.path() + "/" + type.getName();
+        ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
+
+        try {
+            Enumeration<URL> urls = classLoader.getResources(fileName);
+            if (!urls.hasMoreElements()) {
+                LOGGER.debug("No extension configuration found for [{}]", type.getName());
+                return;
+            }
+
+            Map<String, Class<? extends T>> tempClassCache = new HashMap<>();
+
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                loadResource(url, tempClassCache);
+            }
+
+            if (!tempClassCache.isEmpty()) {
+                classCache.putAll(tempClassCache);
+                LOGGER.info("Loaded {} extensions for [{}]", tempClassCache.size(), type.getName());
+            }
+
+        } catch (IOException e) {
+            throw new ExtensionException("Failed to load extensions for " + type.getName(), e);
+        }
+    }
+
+    /**
+     * 加载单个配置文件
+     */
+    private void loadResource(URL url, Map<String, Class<? extends T>> tempClassCache) {
+        try (InputStream is = url.openStream();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+            String line;
+            int lineNumber = 0;
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                parseLine(line, url, lineNumber, tempClassCache);
+            }
+
+        } catch (IOException e) {
+            LOGGER.warn("Failed to read extension config from [{}]", url, e);
+        }
+    }
+
+    /**
+     * 解析配置行
+     */
+    @SuppressWarnings("unchecked")
+    private void parseLine(String line, URL url, int lineNumber, Map<String, Class<? extends T>> tempClassCache) {
+        int eqIndex = line.indexOf('=');
+        if (eqIndex <= 0) {
+            LOGGER.warn("Invalid extension config at [{}:{}] : {}", url, lineNumber, line);
+            return;
+        }
+
+        String key = line.substring(0, eqIndex).trim();
+        String className = line.substring(eqIndex + 1).trim();
+
+        if (key.isEmpty() || className.isEmpty()) {
+            LOGGER.warn("Invalid extension config at [{}:{}] : {}", url, lineNumber, line);
+            return;
+        }
+
+        if (tempClassCache.containsKey(key)) {
+            LOGGER.warn("Duplicate extension key [{}] at [{}:{}]", key, url, lineNumber);
+            return;
+        }
+
+        try {
+            Class<?> clazz = Class.forName(className, false, ClassUtils.getDefaultClassLoader());
+
+            if (!type.isAssignableFrom(clazz)) {
+                LOGGER.warn("Extension [{}] does not implement [{}] at [{}:{}]",
+                        className, type.getName(), url, lineNumber);
+                return;
+            }
+
+            tempClassCache.put(key, (Class<? extends T>) clazz);
+
+        } catch (ClassNotFoundException e) {
+            LOGGER.warn("Extension class not found [{}] at [{}:{}]", className, url, lineNumber);
+        }
+    }
+
+    /**
+     * 获取或创建实例
+     */
+    private T getOrCreateInstance(String key) {
+        ExtensionScope scope = spi.scope();
+
+        if (scope == ExtensionScope.SINGLETON) {
+            return singletonCache.computeIfAbsent(key, this::createInstance);
+        }
+
+        return createInstance(key);
+    }
+
+    /**
+     * 创建扩展实例
+     */
+    private T createInstance(String key) {
+        Class<? extends T> clazz = classCache.get(key);
+        if (clazz == null) {
+            return null;
+        }
+        try {
+            return ClassUtils.newInstance(clazz);
+        } catch (Exception e) {
+            throw new ExtensionException("Failed to create extension instance: " + key, e);
+        }
     }
 }
