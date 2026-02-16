@@ -26,14 +26,14 @@
 ```plaintext
 meta-projects/
 ├── meta-bom/                   # Maven Bill of Materials (BOM) 管理依赖版本
-├── meta-commons-data/          # 数据处理基础类库
-├── meta-commons-data-ext/      # 数据模型扩展定义
-├── meta-commons-logging/       # 日志记录工具
-├── meta-commons-core/                  # 核心功能模块
-├── meta-commons-extension/             # 扩展机制模块
-├── meta-commons-remoting/              # 远程调用模块
-├── meta-commons-validation/    # 数据验证工具
-└── meta-commons-serial/        # 序列化模块, 包括spi及fastjson2、jackson和commons-lang3序列化实现
+├── meta-data/          # 数据处理基础类库
+├── meta-data-ext/      # 数据模型扩展定义
+├── meta-logging/       # 日志记录工具
+├── meta-core/                  # 核心功能模块
+├── meta-extension/             # 扩展机制模块
+├── meta-remoting/              # 远程调用模块
+├── meta-validation/    # 数据验证工具
+└── meta-serial/        # 序列化模块, 包括spi及fastjson2、jackson和commons-lang3序列化实现
 ```
 
 ## 模块状态
@@ -41,20 +41,20 @@ meta-projects/
 | 模块名称 | 状态 | 描述 |
 |---------|------|------|
 | meta-bom | ✅ 完成 | Maven依赖版本管理 |
-| meta-commons-serial | ✅ 完成 | 序列化框架，SPI及其实现 |
-| meta-commons-data | ✅ 完成 | 核心数据模型 |
-| meta-commons-data-ext | ⚠️ 开发中 | 数据模型扩展 |
-| meta-commons-logging | ✅ 完成 | 日志工具 |
-| meta-commons-core | ⚠️ 开发中 | 核心功能 |
-| meta-commons-extension | ⚠️ 开发中 | 扩展机制 |
-| meta-commons-remoting | ⚠️ 开发中 | 远程调用 |
-| meta-commons-validation | ⚠️ 开发中 | 验证工具 |
-| meta-commons-monitoring | 📅 计划中 | 监控模块 |
+| meta-serial | ✅ 完成 | 序列化框架，SPI及其实现 |
+| meta-data | ✅ 完成 | 核心数据模型 |
+| meta-data-ext | ⚠️ 开发中 | 数据模型扩展 |
+| meta-logging | ✅ 完成 | 日志工具 |
+| meta-core | ⚠️ 开发中 | 核心功能 |
+| meta-extension | ⚠️ 开发中 | 扩展机制 |
+| meta-remoting | ⚠️ 开发中 | 远程调用 |
+| meta-validation | ⚠️ 开发中 | 验证工具 |
+| meta-monitoring | 📅 计划中 | 监控模块 |
 
 ### TODO
-* meta-commons-logging
+* meta-logging
     * LogFilter
-* meta-commons-monitoring
+* meta-monitoring
 
 ## 安装指南
 
@@ -82,7 +82,7 @@ cd meta-projects
 cd meta-bom && mvn clean install
 
 # 构建单个模块
-cd meta-commons-data && mvn clean install
+cd meta-data && mvn clean install
 ```
 
 ### 运行测试
@@ -92,7 +92,7 @@ cd meta-commons-data && mvn clean install
 cd meta-bom && mvn test
 
 # 运行单个模块测试
-cd meta-commons-data && mvn test
+cd meta-data && mvn test
 
 # 生成覆盖率报告
 cd meta-bom && mvn clean test jacoco:report
@@ -108,14 +108,14 @@ cd meta-bom && mvn clean test jacoco:report
 <!-- 基础数据处理模块 -->
 <dependency>
    <groupId>com.softmegatron.shared</groupId>
-   <artifactId>meta-commons-data</artifactId>
+   <artifactId>meta-data</artifactId>
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
 <!-- 序列化模块 jackson实现 -->
 <dependency>
    <groupId>com.softmegatron.shared</groupId>
-   <artifactId>meta-commons-serial-jackson</artifactId>
+   <artifactId>meta-serial-jackson</artifactId>
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
@@ -127,8 +127,8 @@ cd meta-bom && mvn clean test jacoco:report
 #### 数据处理示例
 
 ```java
-import com.softmegatron.shared.meta.commons.data.base.PageRequest;
-import com.softmegatron.shared.meta.commons.data.utils.RequestUtils;
+import com.softmegatron.shared.meta.data.base.PageRequest;
+import com.softmegatron.shared.meta.data.utils.RequestUtils;
 
 public class DataExample {
     public static void main(String[] args) {
@@ -150,8 +150,8 @@ public class DataExample {
 #### 序列化示例
 
 ```java
-import com.softmegatron.shared.meta.commons.data.serial.DefaultObjectSerializer;
-import com.softmegatron.shared.meta.commons.data.base.BaseSerializable;
+import com.softmegatron.shared.meta.data.serial.DefaultObjectSerializer;
+import com.softmegatron.shared.meta.data.base.BaseSerializable;
 
 public class SerializationExample {
     public static void main(String[] args) {
