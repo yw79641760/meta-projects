@@ -1,6 +1,8 @@
 package com.softmegatron.shared.meta.extension.loader;
 
 import com.softmegatron.shared.meta.extension.annotation.Spi;
+import com.softmegatron.shared.meta.extension.exception.ExtensionException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,15 +38,15 @@ public class ExtensionManager {
     public static <T> ExtensionLoader<T> getExtensionLoader(final Class<T> clazz) {
         if (clazz == null) {
             LOGGER.error("Empty class found in getExtensionLoader. [clazz={}]", clazz);
-            throw new IllegalArgumentException("Empty class found in getExtensionLoader.");
+            throw new ExtensionException("Empty class found in getExtensionLoader.");
         }
         if (!clazz.isInterface()) {
             LOGGER.error("Invalid class found in getExtensionLoader. [class={}]", clazz);
-            throw new IllegalArgumentException("Invalid clazz found in getExtensionLoader.");
+            throw new ExtensionException("Invalid clazz found in getExtensionLoader.");
         }
         if (!clazz.isAnnotationPresent(Spi.class)) {
             LOGGER.error("Empty required annotation found in getExtensionLoader. [class={}]", clazz);
-            throw new IllegalArgumentException("Empty required annotation found in getExtensionLoader.");
+            throw new ExtensionException("Empty required annotation found in getExtensionLoader.");
         }
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADER_CACHE.computeIfAbsent(clazz, cls -> new ExtensionLoader<>(cls));
         // 同步初始化，防止重复

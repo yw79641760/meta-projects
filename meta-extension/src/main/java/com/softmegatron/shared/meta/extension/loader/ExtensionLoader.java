@@ -36,15 +36,15 @@ public class ExtensionLoader<T> {
     /**
      * key -> extensionInstance
      */
-    private volatile Map<String, Object> EXTENSION_INSTANCE_CACHE = new ConcurrentHashMap<>();
+    private final Map<String, Object> EXTENSION_INSTANCE_CACHE = new ConcurrentHashMap<>();
     /**
      * spi类型
      */
-    private Class<T> clazz;
+    private final Class<T> clazz;
     /**
      * spi标注
      */
-    private Spi spi;
+    private final Spi spi;
     /**
      * 是否已经初始化
      */

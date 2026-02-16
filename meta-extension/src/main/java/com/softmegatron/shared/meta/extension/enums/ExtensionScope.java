@@ -10,7 +10,8 @@ import com.softmegatron.shared.meta.data.base.BaseEnum;
  */
 public enum ExtensionScope implements BaseEnum{
 
-    SINGLETON("SINGLETON", "单例模式")
+    SINGLETON("SINGLETON", "单例模式"),
+    PROTOTYPE("PROTOTYPE", "多例模式"),
     ;
 
     private final String code;

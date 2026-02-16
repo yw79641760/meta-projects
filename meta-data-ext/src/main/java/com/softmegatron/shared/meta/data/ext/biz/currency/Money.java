@@ -1,6 +1,6 @@
 package com.softmegatron.shared.meta.data.ext.biz.currency;
 
-import com.softmegatron.shared.meta.data.base.BaseModel;
+import com.softmegatron.shared.meta.data.base.ValueObject;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,7 +13,7 @@ import java.util.Currency;
  * @version 1.0.0
  * @since 5/4/20 2:33 AM
  */
-public class Money extends BaseModel implements Comparable<Money>{
+public class Money extends ValueObject implements Comparable<Money>{
 
     private static final long serialVersionUID = -2997496742424061921L;
 
@@ -255,5 +255,10 @@ public class Money extends BaseModel implements Comparable<Money>{
 
     public boolean largeThanZero() {
         return this.cent > 0;
+    }
+
+    @Override
+    protected Object[] getEqualityComponents() {
+        return new Object[] { this.cent, this.currency };
     }
 }
