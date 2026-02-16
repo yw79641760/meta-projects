@@ -156,12 +156,12 @@ public class Money extends ValueObject implements Comparable<Money>{
         return this;
     }
 
-    public Money substract(Money other) {
+    public Money subtract(Money other) {
         assertSameCurrencyAs(other);
         return newMoneyWithSameCurrency(this.cent - other.cent);
     }
 
-    public Money substractFrom(Money other) {
+    public Money subtractFrom(Money other) {
         assertSameCurrencyAs(other);
         this.cent -= other.cent;
         return this;
