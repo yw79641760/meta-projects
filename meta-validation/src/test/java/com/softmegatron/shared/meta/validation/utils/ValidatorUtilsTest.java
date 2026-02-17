@@ -3,6 +3,7 @@ package com.softmegatron.shared.meta.validation.utils;
 import com.softmegatron.shared.meta.validation.exception.ViolationException;
 import com.softmegatron.shared.meta.validation.model.Violation;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.*;
