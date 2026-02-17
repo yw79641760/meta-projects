@@ -1,0 +1,2 @@
+# PrototypeService SPI extensions
+prototype=com.softmegatron.shared.meta.extension.core.PrototypeServiceImpl

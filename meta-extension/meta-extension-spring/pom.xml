@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.softmegatron.shared</groupId>
-        <artifactId>meta-bom</artifactId>
+        <artifactId>meta-extension</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>meta-extension</artifactId>
+    <artifactId>meta-extension-spring</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
