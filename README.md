@@ -13,7 +13,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![build_status](https://github.com/SoftMegatron/meta-projects/actions/workflows/maven.yml/badge.svg)
-[![Maintainability](https://qlty.sh/gh/SoftMegatron/projects/meta-projects/maintainability.svg)](https://qlty.sh/gh/SoftMegatron/projects/meta-projects)
+[Maintainability](https://qlty.sh/gh/SoftMegatron/projects/meta-projects/maintainability.svg)](https://qlty.sh/gh/SoftMegatron/projects/meta-projects)
 [![codecov](https://codecov.io/github/SoftMegatron/meta-projects/graph/badge.svg?token=3CFXBDSBC2)](https://codecov.io/github/SoftMegatron/meta-projects)
 [![Known Vulnerabilities](https://snyk.io/test/github/SoftMegatron/meta-projects/badge.svg)](https://snyk.io/test/github/SoftMegatron/meta-projects)
 
@@ -25,35 +25,45 @@
 
 ```plaintext
 meta-projects/
-├── meta-bom/                   # Maven Bill of Materials (BOM) 管理依赖版本
-├── meta-data/          # 数据处理基础类库
-├── meta-data-ext/      # 数据模型扩展定义
-├── meta-logging/       # 日志记录工具
-├── meta-core/                  # 核心功能模块
-├── meta-extension/             # 扩展机制模块
-├── meta-remoting/              # 远程调用模块
-├── meta-validation/    # 数据验证工具
-└── meta-serial/        # 序列化模块, 包括spi及fastjson2、jackson和commons-lang3序列化实现
+├── meta-bom/                       # Maven Bill of Materials (BOM) 管理依赖版本
+├── meta-data/                      # 数据处理基础类库 (187 测试)
+├── meta-data-ext/                  # 数据模型扩展定义
+├── meta-logging/                   # 日志记录工具
+├── meta-core/                      # 核心功能模块 (50 测试)
+├── meta-extension/                 # 扩展机制模块
+│   ├── meta-extension-core/        # 核心SPI机制 (13 测试)
+│   └── meta-extension-spring/      # Spring集成 (10 测试)
+├── meta-remoting/                  # 远程调用模块
+│   ├── meta-remoting-api/          # 远程调用API
+│   ├── meta-remoting-http/         # HTTP实现
+│   └── meta-remoting-dubbo/        # Dubbo实现
+├── meta-validation/                # 数据验证工具 (90 测试)
+└── meta-serial/                    # 序列化模块
+    ├── meta-serial-spi/            # SPI接口定义
+    ├── meta-serial-fastjson/       # FastJSON实现
+    ├── meta-serial-jackson/        # Jackson实现
+    └── meta-serial-lang/           # Java原生实现
 ```
 
 ## 模块状态
 
-| 模块名称 | 状态 | 描述 |
-|---------|------|------|
-| meta-bom | ✅ 完成 | Maven依赖版本管理 |
-| meta-serial | ✅ 完成 | 序列化框架，SPI及其实现 |
-| meta-data | ✅ 完成 | 核心数据模型 |
-| meta-data-ext | ⚠️ 开发中 | 数据模型扩展 |
-| meta-logging | ✅ 完成 | 日志工具 |
-| meta-core | ⚠️ 开发中 | 核心功能 |
-| meta-extension | ⚠️ 开发中 | 扩展机制 |
-| meta-remoting | ⚠️ 开发中 | 远程调用 |
-| meta-validation | ⚠️ 开发中 | 验证工具 |
-| meta-monitoring | 📅 计划中 | 监控模块 |
+| 模块名称 | 状态 | 测试数 | 描述 |
+|---------|------|--------|------|
+| meta-bom | ✅ 完成 | - | Maven依赖版本管理 |
+| meta-serial | ✅ 完成 | - | 序列化框架，SPI及其实现 |
+| meta-data | ✅ 完成 | 187 | 核心数据模型 |
+| meta-data-ext | ⚠️ 开发中 | - | 数据模型扩展 |
+| meta-logging | ✅ 完成 | - | 日志工具 |
+| meta-core | ✅ 完成 | 50 | 核心功能、责任链、单例模式 |
+| meta-extension | ✅ 完成 | 23 | SPI扩展机制 + Spring集成 |
+| meta-remoting | ⚠️ 开发中 | - | 远程调用 (HTTP/Dubbo) |
+| meta-validation | ✅ 完成 | 90 | 数据验证工具 |
+| meta-monitoring | 📅 计划中 | - | 监控模块 |
 
 ### TODO
-* meta-logging
-    * LogFilter
+* meta-remoting
+    * HTTP远程调用实现
+    * Dubbo远程调用实现
 * meta-monitoring
 
 ## 安装指南
@@ -119,10 +129,78 @@ cd meta-bom && mvn clean test jacoco:report
    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
+<!-- SPI扩展机制 (纯Java) -->
+<dependency>
+   <groupId>com.softmegatron.shared</groupId>
+   <artifactId>meta-extension-core</artifactId>
+   <version>1.0.0-SNAPSHOT</version>
+</dependency>
+
+<!-- SPI扩展机制 + Spring集成 -->
+<dependency>
+   <groupId>com.softmegatron.shared</groupId>
+   <artifactId>meta-extension-spring</artifactId>
+   <version>1.0.0-SNAPSHOT</version>
+</dependency>
+
 <!-- 根据需要添加其他模块 -->
 ```
 
 ### 示例代码
+
+#### SPI 扩展示例
+
+```java
+import com.softmegatron.shared.meta.extension.core.annotation.Spi;
+import com.softmegatron.shared.meta.extension.core.loader.ExtensionManager;
+
+// 1. 定义扩展点接口
+@Spi("default")
+public interface RemoteService {
+    String invoke(String request);
+}
+
+// 2. 创建配置文件 META-INF/extensions/com.example.RemoteService
+// default=com.example.DefaultRemoteServiceImpl
+// http=com.example.HttpRemoteServiceImpl
+
+// 3. 获取扩展实现
+RemoteService service = ExtensionManager.getExtension(RemoteService.class, "http");
+String result = service.invoke("hello");
+
+// 4. 获取默认扩展
+RemoteService defaultService = ExtensionManager.getDefaultExtension(RemoteService.class);
+
+// 5. 安全获取（优先指定key，fallback到默认）
+RemoteService safeService = ExtensionManager.getExtensionOrDefault(RemoteService.class, "dubbo");
+```
+
+#### Spring 集成示例
+
+```java
+import com.softmegatron.shared.meta.extension.core.annotation.Spi;
+import com.softmegatron.shared.meta.extension.core.loader.ExtensionManager;
+import org.springframework.stereotype.Component;
+
+// 1. 定义扩展点接口
+@Spi("default")
+public interface DataService {
+    String getData();
+}
+
+// 2. 创建 Spring Bean 实现
+@Component("myDataService")
+public class MyDataServiceImpl implements DataService {
+    @Override
+    public String getData() {
+        return "data from spring bean";
+    }
+}
+
+// 3. 直接使用，自动从Spring容器获取
+// Spring Boot 引入 meta-extension-spring 后自动配置
+DataService service = ExtensionManager.getExtension(DataService.class, "myDataService");
+```
 
 #### 数据处理示例
 
@@ -147,33 +225,131 @@ public class DataExample {
 }
 ```
 
-#### 序列化示例
+#### 责任链示例
 
 ```java
-import com.softmegatron.shared.meta.data.serial.DefaultObjectSerializer;
-import com.softmegatron.shared.meta.data.base.BaseSerializable;
+import com.softmegatron.shared.meta.core.pattern.chain.ChainBuilder;
+import com.softmegatron.shared.meta.core.pattern.chain.ChainHandler;
+import com.softmegatron.shared.meta.core.pattern.chain.ChainContext;
 
-public class SerializationExample {
-    public static void main(String[] args) {
-        // 使用默认序列化器
-        MyDataObject obj = new MyDataObject("test", 123);
-        String serialized = DefaultObjectSerializer.toString(obj);
-        System.out.println("序列化结果: " + serialized);
+// 1. 定义处理器
+public class LogHandler implements ChainHandler<String, String> {
+    private ChainHandler<String, String> next;
+    
+    @Override
+    public String handle(String request, ChainContext context) {
+        System.out.println("Logging: " + request);
+        if (next != null) {
+            return next.handle(request, context);
+        }
+        return request;
     }
     
-    static class MyDataObject extends BaseSerializable {
-        private String name;
-        private int value;
-        
-        public MyDataObject(String name, int value) {
-            this.name = name;
-            this.value = value;
-        }
-        
-        // getters and setters...
+    @Override
+    public void setNext(ChainHandler<String, String> next) {
+        this.next = next;
+    }
+    
+    @Override
+    public ChainHandler<String, String> getNext() {
+        return next;
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;  // 越小优先级越高
     }
 }
+
+// 2. 构建并执行责任链
+ChainHandler<String, String> chain = new ChainBuilder<String, String>()
+    .addHandler(new LogHandler())
+    .addHandler(new AuthHandler())
+    .addHandler(new BusinessHandler())
+    .build();
+
+String result = chain.handle("request", new ChainContext());
 ```
+
+#### 数据验证示例
+
+```java
+import com.softmegatron.shared.meta.validation.utils.ValidatorUtils;
+import com.softmegatron.shared.meta.validation.exception.ViolationException;
+import jakarta.validation.constraints.*;
+
+public class User {
+    @NotNull
+    @Size(min = 2, max = 50)
+    private String name;
+    
+    @Email
+    private String email;
+    
+    @Min(18)
+    @Max(120)
+    private int age;
+    
+    // getters and setters...
+}
+
+// 验证对象
+try {
+    ValidatorUtils.validate(user);
+} catch (ViolationException e) {
+    e.getViolations().forEach(v -> {
+        System.out.println("字段: " + v.getPropertyPath());
+        System.out.println("错误: " + v.getMessage());
+        System.out.println("无效值: " + v.getInvalidValue());
+    });
+}
+
+// 验证单个属性
+ValidatorUtils.validateProperty(user, "email");
+
+// 验证值（无需实例化对象）
+ValidatorUtils.validateValue(User.class, "age", 15);  // 抛出异常
+
+// 正则验证
+ValidatorUtils.tryValidateRegex("^\\d{11}$", "13812345678");
+```
+
+## 核心模块详解
+
+### meta-extension (SPI扩展机制)
+
+提供类似 Dubbo SPI 的扩展能力：
+
+| 特性 | 说明 |
+|------|------|
+| 多工厂模式 | 支持 SPI 配置 + Spring Bean + 可扩展 |
+| 单例/多例 | 通过 `@Spi(scope=...)` 指定 |
+| 默认扩展 | 通过 `@Spi("defaultKey")` 指定 |
+| 线程安全 | DCL + ConcurrentHashMap |
+
+```
+ExtensionManager
+  ├── SpringExtensionFactory (order=0)  ← Spring Bean 优先
+  └── SpiExtensionFactory (order=100)   ← SPI 配置
+```
+
+### meta-core (核心功能)
+
+| 组件 | 说明 |
+|------|------|
+| ClassUtils | ClassLoader 管理、实例化 |
+| AppVersionUtils | 版本号比较 |
+| SingletonHolder | 单例模式模板 |
+| ChainBuilder | 责任链模式构建器 |
+| ChainContext | 责任链上下文 |
+
+### meta-validation (数据验证)
+
+基于 JSR-303 Bean Validation：
+
+- 支持 `@NotNull`, `@Size`, `@Min`, `@Max`, `@Email`, `@Pattern` 等注解
+- 支持分组验证
+- 统一异常 `ViolationException`
 
 ## 开发指南
 

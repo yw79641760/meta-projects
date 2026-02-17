@@ -7,17 +7,17 @@ This file contains build commands and code style guidelines for the Meta Project
 当前项目包含以下模块，其中部分模块已完成开发，部分仍在开发中：
 
 ### 已完成模块
-- ✅ **meta-data**: 核心数据处理库，包含完整的测试用例(187个测试)
-- ✅ **meta-serial**: 序列化框架，包含SPI接口和多种实现
 - ✅ **meta-bom**: Maven依赖版本管理
+- ✅ **meta-data**: 核心数据处理库 (187个测试)
+- ✅ **meta-serial**: 序列化框架，SPI接口及多种实现
+- ✅ **meta-logging**: 日志记录工具
+- ✅ **meta-core**: 核心功能模块 (50个测试)
+- ✅ **meta-extension**: SPI扩展机制 + Spring集成 (23个测试)
+- ✅ **meta-validation**: 数据验证工具 (90个测试)
 
 ### 开发中模块
 - ⚠️ **meta-data-ext**: 数据模型扩展
-- ⚠️ **meta-logging**: 日志记录工具
-- ⚠️ **meta-core**: 核心功能模块
-- ⚠️ **meta-extension**: 扩展机制模块
 - ⚠️ **meta-remoting**: 远程调用模块
-- ⚠️ **meta-validation**: 数据验证工具
 
 ## Build Commands
 
@@ -56,7 +56,7 @@ cd meta-bom && mvn clean test jacoco:report
 ### Package Structure
 - Base package: `com.softmegatron.shared.meta`
 - Module pattern: `com.softmegatron.shared.meta.{module}[.{submodule}].{type}`
-- Type suffixes: `common`, `http`, `enums`, `model`, `constants`, `utils`, `exception`, `annotation`, `registry`
+- Type suffixes: `common`, `http`, `enums`, `model`, `constants`, `utils`, `exception`, `annotation`, `factory`, `loader`
 
 ### Import Order
 1. Standard Java imports (java.*)
@@ -69,7 +69,7 @@ Separate each group with a blank line.
 ### Naming Conventions
 - Classes: PascalCase (`RemoteService`, `HttpRemoteServiceImpl`)
 - Interfaces: PascalCase, descriptive of type (`RemoteService`, `BaseEnum`)
-- Enums: PascalCase (`RemoteProtocol`, `HttpMethod`)
+- Enums: PascalCase (`ExtensionScope`, `HttpMethod`)
 - Interface constants: UPPER_SNAKE_CASE (`DEFAULT_CONN_TIMEOUT`)
 - Class constants: UPPER_SNAKE_CASE (`EXTENSION_TYPE_CACHE`)
 - Methods: camelCase (`invoke`, `getParams`)
@@ -83,7 +83,13 @@ package ...;
 import ...;
 import ...;
 
-// Javadoc header
+/**
+ * 类描述
+ *
+ * @author <a href="mailto:wei.yan@softmegatron.com">wei.yan</a>
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 public class ClassName extends BaseType {
     private static final long serialVersionUID = <generated>;
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassName.class);
@@ -109,7 +115,7 @@ public class ClassName extends BaseType {
 - Javadoc for all public/protected/package-private members
 
 ### Annotations
-- SPI extension points: `@SPI("defaultKey")`
+- SPI extension points: `@Spi("defaultKey")`
 - Nullability: `@Nullable`, `@NotNull` (from JetBrains annotations)
 - JUnit tests: `@Test`
 - Validation: JSR-303 annotations (`@NotNull`, `@NotEmpty`, etc.)
@@ -127,7 +133,7 @@ Preferred for: constants, Preconditions (`checkNotNull`, `checkArgument`), time 
 - Log errors at ERROR level: `LOGGER.error("message", exception)`
 
 ### Validation
-- Framework: JSR-303 Bean Validation (javax.validation)
+- Framework: JSR-303 Bean Validation (jakarta.validation)
 - Use `@NotNull`, `@NotEmpty`, `@Size`, etc. annotations on fields
 - Validate with `ValidatorUtils.validate()` or manual validator
 - Validation failures throw `ViolationException`
@@ -148,24 +154,42 @@ Preferred for: constants, Preconditions (`checkNotNull`, `checkArgument`), time 
 
 ### Current Module List
 ```
-meta-bom/                    # ✅ 完整 - 依赖版本管理
-meta-data/          # ✅ 完整 - 数据处理基础类(187个测试)
-├── base/                   # 基础数据模型和接口
-├── constants/              # 常量定义
-├── enums/                  # 枚举类型
-├── serial/                 # 序列化相关工具
-└── utils/                  # 数据处理工具类
-meta-data-ext/      # ⚠️ 开发中 - 数据模型扩展
-meta-logging/       # ⚠️ 开发中 - 日志记录工具
-meta-core/                  # ⚠️ 开发中 - 核心功能模块
-meta-extension/             # ⚠️ 开发中 - 扩展机制模块
-meta-remoting/              # ⚠️ 开发中 - 远程调用模块
-meta-validation/    # ⚠️ 开发中 - 数据验证工具
-meta-serial/        # ✅ 完整 - 序列化框架
-├── meta-serial-spi/     # SPI接口定义
-├── meta-serial-fastjson/ # FastJSON实现
-├── meta-serial-jackson/  # Jackson实现
-└── meta-serial-lang/     # Java原生实现
+meta-bom/                        # ✅ 完成 - 依赖版本管理
+meta-data/                       # ✅ 完成 - 数据处理基础类 (187个测试)
+├── base/                        # 基础数据模型和接口
+├── constants/                   # 常量定义
+├── enums/                       # 枚举类型
+├── serial/                      # 序列化相关工具
+└── utils/                       # 数据处理工具类
+meta-data-ext/                   # ⚠️ 开发中 - 数据模型扩展
+meta-logging/                    # ✅ 完成 - 日志记录工具
+meta-core/                       # ✅ 完成 - 核心功能模块 (50个测试)
+├── pattern/holder/              # 单例模式
+├── pattern/chain/               # 责任链模式
+└── utils/                       # 工具类
+meta-extension/                  # ✅ 完成 - SPI扩展机制 (23个测试)
+├── meta-extension-core/         # 核心SPI机制 (13个测试)
+│   ├── annotation/              # @Spi 注解
+│   ├── enums/                   # ExtensionScope 枚举
+│   ├── exception/               # ExtensionException
+│   ├── factory/                 # ExtensionFactory 接口
+│   └── loader/                  # ExtensionLoader/Manager
+└── meta-extension-spring/       # Spring集成 (10个测试)
+    ├── config/                  # 自动配置
+    └── factory/                 # SpringExtensionFactory
+meta-remoting/                   # ⚠️ 开发中 - 远程调用模块
+├── meta-remoting-api/           # API定义
+├── meta-remoting-http/          # HTTP实现
+└── meta-remoting-dubbo/         # Dubbo实现
+meta-validation/                 # ✅ 完成 - 数据验证工具 (90个测试)
+├── exception/                   # ViolationException
+├── model/                       # Violation
+└── utils/                       # ValidatorUtils
+meta-serial/                     # ✅ 完成 - 序列化框架
+├── meta-serial-spi/             # SPI接口定义
+├── meta-serial-fastjson/        # FastJSON实现
+├── meta-serial-jackson/         # Jackson实现
+└── meta-serial-lang/            # Java原生实现
 ```
 
 ### Common Patterns
@@ -175,11 +199,12 @@ meta-serial/        # ✅ 完整 - 序列化框架
 - Static helper methods in utility classes (e.g., `RequestUtils`)
 - Reflection caching for performance optimization
 - SPI-based plugin architecture for extensibility
+- ExtensionFactory chain for multi-source extension loading
 
 ### Performance Considerations
 - Use reflection caching for frequently accessed class metadata
 - Implement lazy initialization where appropriate
-- Consider thread safety in concurrent environments
+- Consider thread safety in concurrent environments (DCL, ConcurrentHashMap)
 - Profile performance bottlenecks before optimization
 
 ### Documentation Requirements
@@ -187,3 +212,58 @@ meta-serial/        # ✅ 完整 - 序列化框架
 - Complex algorithms should have inline comments
 - Package-level documentation in package-info.java
 - README.md updates for major feature additions
+
+## Extension Module Usage
+
+### Basic SPI Usage
+```java
+// 1. Define extension interface
+@Spi("default")
+public interface MyService {
+    String process(String input);
+}
+
+// 2. Create META-INF/extensions/com.example.MyService
+// default=com.example.DefaultServiceImpl
+// custom=com.example.CustomServiceImpl
+
+// 3. Get extension
+MyService service = ExtensionManager.getExtension(MyService.class, "custom");
+```
+
+### Spring Integration
+```java
+// 1. Add dependency: meta-extension-spring
+// 2. Define interface
+@Spi
+public interface DataService {
+    String getData();
+}
+
+// 3. Create Spring Bean
+@Component("myDataService")
+public class MyDataServiceImpl implements DataService {
+    // ...
+}
+
+// 4. Use ExtensionManager - auto-detects Spring beans
+DataService service = ExtensionManager.getExtension(DataService.class, "myDataService");
+```
+
+### Custom ExtensionFactory
+```java
+public class MyExtensionFactory implements ExtensionFactory {
+    @Override
+    public <T> T getExtension(Class<T> type, String name) {
+        // Custom logic
+        return null;
+    }
+    
+    @Override
+    public int getOrder() {
+        return 50;  // Lower = higher priority
+    }
+}
+
+// Register via META-INF/services/com.softmegatron.shared.meta.extension.core.factory.ExtensionFactory
+```
