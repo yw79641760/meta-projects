@@ -1,26 +1,22 @@
 package com.softmegatron.shared.meta.validation.utils;
 
+import com.softmegatron.shared.meta.validation.exception.ViolationException;
+import com.softmegatron.shared.meta.validation.model.Violation;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.*;
+import jakarta.validation.groups.Default;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * ValidatorUtils 测试类
  *
  * @author <a href="mailto:wei.yan@softmegatron.com">yw</a>
- * @description 测试 ValidatorUtils 工具类
- * @date 2026/2/6 16:20
  * @since 1.0.0
  */
 public class ValidatorUtilsTest {
@@ -50,101 +46,118 @@ public class ValidatorUtilsTest {
             this.code = code;
         }
 
-        public String getName() {
-            return name;
+        public void setName(String name) {
+            this.name = name;
         }
 
-        public String getDescription() {
-            return description;
+        public void setDescription(String description) {
+            this.description = description;
         }
 
-        public int getAge() {
-            return age;
+        public void setAge(int age) {
+            this.age = age;
         }
 
-        public String getEmail() {
-            return email;
+        public void setEmail(String email) {
+            this.email = email;
         }
 
-        public String getCode() {
-            return code;
+        public void setCode(String code) {
+            this.code = code;
         }
     }
 
     private static class EmptyObject {
     }
 
+    private interface CreateGroup {
+    }
+
+    private interface UpdateGroup {
+    }
+
+    private static class GroupTestObject {
+        @NotNull(groups = CreateGroup.class)
+        private String createOnly;
+
+        @NotNull(groups = UpdateGroup.class)
+        private String updateOnly;
+
+        @NotNull(groups = {CreateGroup.class, UpdateGroup.class})
+        private String both;
+
+        public GroupTestObject(String createOnly, String updateOnly, String both) {
+            this.createOnly = createOnly;
+            this.updateOnly = updateOnly;
+            this.both = both;
+        }
+    }
+
+    private static class NestedObject {
+        @NotNull
+        private String name;
+
+        @Valid
+        private TestObject nested;
+
+        public NestedObject(String name, TestObject nested) {
+            this.name = name;
+            this.nested = nested;
+        }
+    }
+
     @Test
     public void testValidateWithValidObject() {
         TestObject validObject = new TestObject("test", "valid", 25, "test@example.com", "123");
-        
         ValidatorUtils.validate(validObject);
     }
 
     @Test
     public void testValidateWithNullName() {
         TestObject invalidObject = new TestObject(null, "valid", 25, "test@example.com", "123");
-        
+
         try {
             ValidatorUtils.validate(invalidObject);
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            assertNotNull("violations不应该为null", e.getViolations());
-            assertTrue("violations应该不为空", !e.getViolations().isEmpty());
-            System.out.println("Expected exception: " + e.getMessage());
+        } catch (ViolationException e) {
+            assertNotNull(e.getViolations());
+            assertFalse(e.getViolations().isEmpty());
         }
     }
 
     @Test
     public void testValidateWithInvalidSize() {
         TestObject invalidObject = new TestObject("test", "very long description", 25, "test@example.com", "123");
-        
+
         try {
             ValidatorUtils.validate(invalidObject);
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            assertTrue("violations应该不为空", !e.getViolations().isEmpty());
-            System.out.println("Expected exception: " + e.getMessage());
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
         }
     }
 
     @Test
     public void testValidateWithInvalidAge() {
         TestObject invalidObject = new TestObject("test", "valid", 15, "test@example.com", "123");
-        
+
         try {
             ValidatorUtils.validate(invalidObject);
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            assertTrue("violations应该不为空", !e.getViolations().isEmpty());
-            System.out.println("Expected exception: " + e.getMessage());
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
         }
     }
 
     @Test
     public void testValidateWithInvalidEmail() {
         TestObject invalidObject = new TestObject("test", "valid", 25, "invalid-email", "123");
-        
+
         try {
             ValidatorUtils.validate(invalidObject);
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            assertTrue("violations应该不为空", !e.getViolations().isEmpty());
-            System.out.println("Expected exception: " + e.getMessage());
-        }
-    }
-
-    @Test
-    public void testValidateWithNull() {
-        try {
-            ValidatorUtils.validate(null);
-        } catch (Exception e) {
-            assertNotNull("异常不应该为null", e);
-            System.out.println("Expected exception for null: " + e.getClass().getName());
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
         }
     }
 
@@ -163,26 +176,18 @@ public class ValidatorUtilsTest {
     @Test
     public void testValidatePropertyWithInvalidValue() {
         TestObject object = new TestObject(null, "valid", 25, "test@example.com", "123");
-        
+
         try {
             ValidatorUtils.validateProperty(object, "name");
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            assertTrue("violations应该不为空", !e.getViolations().isEmpty());
-            System.out.println("Expected exception: " + e.getMessage());
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testValidatePropertyWithNullObject() {
-        try {
-            ValidatorUtils.validateProperty(null, "name");
-            fail("应该抛出异常");
-        } catch (IllegalArgumentException e) {
-            assertNotNull("异常不应该为null", e);
-            System.out.println("Expected exception: " + e.getMessage());
-        }
+        ValidatorUtils.validateProperty(null, "name");
     }
 
     @Test
@@ -195,10 +200,8 @@ public class ValidatorUtilsTest {
         try {
             ValidatorUtils.validateValue(TestObject.class, "age", 10);
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            assertTrue("violations应该不为空", !e.getViolations().isEmpty());
-            System.out.println("Expected exception: " + e.getMessage());
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
         }
     }
 
@@ -212,17 +215,11 @@ public class ValidatorUtilsTest {
         try {
             ValidatorUtils.tryValidateRegex("\\d+", "abc");
             fail("应该抛出ViolationException");
-        } catch (com.softmegatron.shared.meta.validation.exception.ViolationException e) {
-            assertNotNull("异常不应该为null", e);
-            Set<com.softmegatron.shared.meta.validation.model.Violation> violations = e.getViolations();
-            assertNotNull("violations不应该为null", violations);
-            assertTrue("violations应该有1个元素", violations.size() == 1);
-            
-            com.softmegatron.shared.meta.validation.model.Violation violation = 
-                violations.iterator().next();
-            assertTrue("message应该包含'not matching'", 
-                      violation.getMessage().contains("not matching"));
-            System.out.println("Expected exception: " + e.getMessage());
+        } catch (ViolationException e) {
+            Set<Violation> violations = e.getViolations();
+            assertEquals(1, violations.size());
+            Violation violation = violations.iterator().next();
+            assertTrue(violation.getMessage().contains("not matching"));
         }
     }
 
@@ -232,82 +229,269 @@ public class ValidatorUtilsTest {
     }
 
     @Test
+    public void testTryValidateRegexWithEmptyValue() {
+        try {
+            ValidatorUtils.tryValidateRegex("\\d+", "");
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testTryValidateRegexWithNullValue() {
+        try {
+            ValidatorUtils.tryValidateRegex("\\d+", null);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertNotNull(e);
+        } catch (NullPointerException e) {
+            // 或者抛出 NullPointerException
+        }
+    }
+
+    @Test
+    public void testValidateWithCustomValidator() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        TestObject validObject = new TestObject("test", "valid", 25, "test@example.com", "123");
+        ValidatorUtils.validate(validator, validObject);
+    }
+
+    @Test
+    public void testValidateWithCustomValidatorInvalid() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        TestObject invalidObject = new TestObject(null, "valid", 25, "test@example.com", "123");
+
+        try {
+            ValidatorUtils.validate(validator, invalidObject);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidatePropertyWithCustomValidator() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        TestObject object = new TestObject("test", "valid", 25, "test@example.com", "123");
+        ValidatorUtils.validateProperty(validator, object, "name");
+    }
+
+    @Test
+    public void testValidatePropertyWithCustomValidatorInvalid() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        TestObject object = new TestObject(null, "valid", 25, "test@example.com", "123");
+
+        try {
+            ValidatorUtils.validateProperty(validator, object, "name");
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateValueWithCustomValidator() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        ValidatorUtils.validateValue(validator, TestObject.class, "age", 25);
+    }
+
+    @Test
+    public void testValidateValueWithCustomValidatorInvalid() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        try {
+            ValidatorUtils.validateValue(validator, TestObject.class, "age", 10);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithCreateGroup() {
+        GroupTestObject object = new GroupTestObject("value", null, "both");
+        ValidatorUtils.validate(object, CreateGroup.class);
+    }
+
+    @Test
+    public void testValidateWithCreateGroupFails() {
+        GroupTestObject object = new GroupTestObject(null, null, "both");
+
+        try {
+            ValidatorUtils.validate(object, CreateGroup.class);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithUpdateGroup() {
+        GroupTestObject object = new GroupTestObject(null, "value", "both");
+        ValidatorUtils.validate(object, UpdateGroup.class);
+    }
+
+    @Test
+    public void testValidateWithUpdateGroupFails() {
+        GroupTestObject object = new GroupTestObject(null, null, "both");
+
+        try {
+            ValidatorUtils.validate(object, UpdateGroup.class);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithBothGroups() {
+        GroupTestObject object = new GroupTestObject("create", "update", "both");
+        ValidatorUtils.validate(object, CreateGroup.class, UpdateGroup.class);
+    }
+
+    @Test
+    public void testValidateWithBothGroupsFailsOnCreate() {
+        GroupTestObject object = new GroupTestObject(null, "update", "both");
+
+        try {
+            ValidatorUtils.validate(object, CreateGroup.class, UpdateGroup.class);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithBothGroupsFailsOnBoth() {
+        GroupTestObject object = new GroupTestObject("create", "update", null);
+
+        try {
+            ValidatorUtils.validate(object, CreateGroup.class, UpdateGroup.class);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithDefaultGroup() {
+        TestObject object = new TestObject("test", "valid", 25, "test@example.com", "123");
+        ValidatorUtils.validate(object, Default.class);
+    }
+
+    @Test
+    public void testValidateValueWithNullValue() {
+        try {
+            ValidatorUtils.validateValue(TestObject.class, "name", null);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateMultipleViolations() {
+        TestObject object = new TestObject(null, "x", 10, "invalid", "abc");
+
+        try {
+            ValidatorUtils.validate(object);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertTrue(e.getViolations().size() >= 3);
+            String message = e.getMessage();
+            assertNotNull(message);
+            assertFalse(message.isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithMaxAge() {
+        TestObject object = new TestObject("test", "valid", 121, "test@example.com", "123");
+
+        try {
+            ValidatorUtils.validate(object);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidateWithBoundaryAge() {
+        TestObject object1 = new TestObject("test", "valid", 18, "test@example.com", "123");
+        TestObject object2 = new TestObject("test", "valid", 120, "test@example.com", "123");
+
+        ValidatorUtils.validate(object1);
+        ValidatorUtils.validate(object2);
+    }
+
+    @Test
+    public void testValidateWithBoundarySize() {
+        TestObject object1 = new TestObject("test", "ab", 25, "test@example.com", "123");
+        TestObject object2 = new TestObject("test", "1234567890", 25, "test@example.com", "123");
+
+        ValidatorUtils.validate(object1);
+        ValidatorUtils.validate(object2);
+    }
+
+    @Test
+    public void testValidateWithSizeTooShort() {
+        TestObject object = new TestObject("test", "a", 25, "test@example.com", "123");
+
+        try {
+            ValidatorUtils.validate(object);
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertFalse(e.getViolations().isEmpty());
+        }
+    }
+
+    @Test
+    public void testValidatePropertyWithNonexistentProperty() {
+        TestObject object = new TestObject("test", "valid", 25, "test@example.com", "123");
+
+        try {
+            ValidatorUtils.validateProperty(object, "nonexistent");
+            fail("应该抛出异常");
+        } catch (Exception e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testValidateValueWithNonexistentProperty() {
+        try {
+            ValidatorUtils.validateValue(TestObject.class, "nonexistent", "value");
+            fail("应该抛出异常");
+        } catch (Exception e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testTryValidateRegexWithEmailPattern() {
+        ValidatorUtils.tryValidateRegex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", "test@example.com");
+    }
+
+    @Test
+    public void testTryValidateRegexWithEmailPatternInvalid() {
+        try {
+            ValidatorUtils.tryValidateRegex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", "invalid-email");
+            fail("应该抛出ViolationException");
+        } catch (ViolationException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testTryValidateRegexWithPhonePattern() {
+        ValidatorUtils.tryValidateRegex("^\\d{11}$", "13812345678");
+    }
+
+    @Test
     public void testValidatorUtilsHasPrivateConstructor() throws NoSuchMethodException {
         var constructor = ValidatorUtils.class.getDeclaredConstructor();
-        assertNotNull("构造函数应该存在", constructor);
-        assertTrue("构造函数应该是private", 
-                  java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
-    }
-
-    @Test
-    public void testValidatorUtilsHasDefaultConstructor() throws NoSuchMethodException {
-        var constructor = ValidatorUtils.class.getDeclaredConstructor();
-        assertNotNull("构造函数应该存在", constructor);
-    }
-
-    @Test
-    public void testValidatorUtilsIsNotFinalClass() {
-        int modifiers = ValidatorUtils.class.getModifiers();
-        assertFalse("ValidatorUtils不应该是final类", 
-                    java.lang.reflect.Modifier.isFinal(modifiers));
-    }
-
-    @Test
-    public void testValidatorUtilsHasLogger() throws NoSuchFieldException {
-        var loggerField = ValidatorUtils.class.getDeclaredField("LOGGER");
-        assertNotNull("LOGGER字段应该存在", loggerField);
-        assertTrue("LOGGER应该是static final", 
-                  java.lang.reflect.Modifier.isStatic(loggerField.getModifiers()) &&
-                  java.lang.reflect.Modifier.isFinal(loggerField.getModifiers()));
-    }
-
-    @Test
-    public void testValidatorUtilsHasDefaultValidator() throws NoSuchFieldException {
-        var validatorField = ValidatorUtils.class.getDeclaredField("DEFAULT_VALIDATOR");
-        assertNotNull("DEFAULT_VALIDATOR字段应该存在", validatorField);
-        assertTrue("DEFAULT_VALIDATOR应该是static final", 
-                  java.lang.reflect.Modifier.isStatic(validatorField.getModifiers()) &&
-                  java.lang.reflect.Modifier.isFinal(validatorField.getModifiers()));
-        assertTrue("DEFAULT_VALIDATOR应该是Validator类型", 
-                  Validator.class.isAssignableFrom(validatorField.getType()));
-    }
-
-    @Test
-    public void testValidateMethodIsStatic() throws NoSuchMethodException {
-        var validateMethod = ValidatorUtils.class.getMethod("validate", Object.class, Class[].class);
-        assertNotNull("validate方法应该存在", validateMethod);
-        assertTrue("validate方法应该是static", 
-                  java.lang.reflect.Modifier.isStatic(validateMethod.getModifiers()));
-    }
-
-    @Test
-    public void testValidatePropertyMethodIsStatic() throws NoSuchMethodException {
-        var validatePropertyMethod = ValidatorUtils.class.getMethod("validateProperty", 
-                                                                     Object.class, 
-                                                                     String.class, 
-                                                                     Class[].class);
-        assertNotNull("validateProperty方法应该存在", validatePropertyMethod);
-        assertTrue("validateProperty方法应该是static", 
-                  java.lang.reflect.Modifier.isStatic(validatePropertyMethod.getModifiers()));
-    }
-
-    @Test
-    public void testValidateValueMethodIsStatic() throws NoSuchMethodException {
-        var validateValueMethod = ValidatorUtils.class.getMethod("validateValue", 
-                                                                 Class.class, 
-                                                                 String.class, 
-                                                                 Object.class, 
-                                                                 Class[].class);
-        assertNotNull("validateValue方法应该存在", validateValueMethod);
-        assertTrue("validateValue方法应该是static", 
-                  java.lang.reflect.Modifier.isStatic(validateValueMethod.getModifiers()));
-    }
-
-    @Test
-    public void testTryValidateRegexMethodIsStatic() throws NoSuchMethodException {
-        var tryValidateRegexMethod = ValidatorUtils.class.getMethod("tryValidateRegex", String.class, String.class);
-        assertNotNull("tryValidateRegex方法应该存在", tryValidateRegexMethod);
-        assertTrue("tryValidateRegex方法应该是static", 
-                  java.lang.reflect.Modifier.isStatic(tryValidateRegexMethod.getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
     }
 }

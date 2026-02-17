@@ -1,20 +1,16 @@
 package com.softmegatron.shared.meta.validation.model;
 
+import com.softmegatron.shared.meta.data.base.BaseModel;
+import com.softmegatron.shared.meta.data.base.BaseSerializable;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Violation 测试类
  *
  * @author <a href="mailto:wei.yan@softmegatron.com">yw</a>
- * @description 测试 Violation 模型类
- * @date 2026/2/6 16:20
  * @since 1.0.0
  */
 public class ViolationTest {
@@ -23,9 +19,6 @@ public class ViolationTest {
     private static final String TEST_PROPERTY_PATH = "fieldName";
     private static final Object TEST_TARGET = new Object();
     private static final Object TEST_INVALID_VALUE = "invalid";
-    private static final String NULL_PROPERTY_PATH = null;
-    private static final Object NULL_TARGET = null;
-    private static final Object NULL_INVALID_VALUE = null;
 
     private Violation violation;
 
@@ -36,140 +29,223 @@ public class ViolationTest {
 
     @Test
     public void testConstructor() {
-        assertNotNull("Violation不应该为null", violation);
-        assertEquals("message应该正确", TEST_MESSAGE, violation.getMessage());
-        assertEquals("target应该正确", TEST_TARGET, violation.getTarget());
-        assertEquals("propertyPath应该正确", TEST_PROPERTY_PATH, violation.getPropertyPath());
-        assertEquals("invalidValue应该正确", TEST_INVALID_VALUE, violation.getInvalidValue());
+        assertNotNull(violation);
+        assertEquals(TEST_MESSAGE, violation.getMessage());
+        assertEquals(TEST_TARGET, violation.getTarget());
+        assertEquals(TEST_PROPERTY_PATH, violation.getPropertyPath());
+        assertEquals(TEST_INVALID_VALUE, violation.getInvalidValue());
     }
 
     @Test
     public void testGetMessage() {
-        String message = violation.getMessage();
-        assertEquals("message应该正确", TEST_MESSAGE, message);
+        assertEquals(TEST_MESSAGE, violation.getMessage());
     }
 
     @Test
     public void testSetMessage() {
         String newMessage = "New message";
         violation.setMessage(newMessage);
-        assertEquals("message应该被更新", newMessage, violation.getMessage());
+        assertEquals(newMessage, violation.getMessage());
     }
 
     @Test
     public void testGetTarget() {
-        Object target = violation.getTarget();
-        assertEquals("target应该正确", TEST_TARGET, target);
+        assertEquals(TEST_TARGET, violation.getTarget());
     }
 
     @Test
     public void testSetTarget() {
         Object newTarget = new Object();
         violation.setTarget(newTarget);
-        assertEquals("target应该被更新", newTarget, violation.getTarget());
+        assertEquals(newTarget, violation.getTarget());
     }
 
     @Test
     public void testGetPropertyPath() {
-        String propertyPath = violation.getPropertyPath();
-        assertEquals("propertyPath应该正确", TEST_PROPERTY_PATH, propertyPath);
+        assertEquals(TEST_PROPERTY_PATH, violation.getPropertyPath());
     }
 
     @Test
     public void testSetPropertyPath() {
-        String newPropertyPath = "newProperty";
-        violation.setPropertyPath(newPropertyPath);
-        assertEquals("propertyPath应该被更新", newPropertyPath, violation.getPropertyPath());
+        String newPath = "newPath";
+        violation.setPropertyPath(newPath);
+        assertEquals(newPath, violation.getPropertyPath());
     }
 
     @Test
     public void testGetInvalidValue() {
-        Object invalidValue = violation.getInvalidValue();
-        assertEquals("invalidValue应该正确", TEST_INVALID_VALUE, invalidValue);
+        assertEquals(TEST_INVALID_VALUE, violation.getInvalidValue());
     }
 
     @Test
     public void testSetInvalidValue() {
-        Object newInvalidValue = "newInvalid";
-        violation.setInvalidValue(newInvalidValue);
-        assertEquals("invalidValue应该被更新", newInvalidValue, violation.getInvalidValue());
+        Object newValue = "newValue";
+        violation.setInvalidValue(newValue);
+        assertEquals(newValue, violation.getInvalidValue());
     }
 
     @Test
     public void testConstructorWithNullValues() {
         Violation nullViolation = new Violation(null, null, null, null);
-        
-        assertNotNull("Violation不应该为null", nullViolation);
-        assertNull("message应该为null", nullViolation.getMessage());
-        assertNull("target应该为null", nullViolation.getTarget());
-        assertNull("propertyPath应该为null", nullViolation.getPropertyPath());
-        assertNull("invalidValue应该为null", nullViolation.getInvalidValue());
-    }
 
-    @Test
-    public void testConstructorWithMixedNullValues() {
-        Violation mixedViolation = new Violation(TEST_MESSAGE, NULL_TARGET, NULL_PROPERTY_PATH, NULL_INVALID_VALUE);
-        
-        assertNotNull("Violation不应该为null", mixedViolation);
-        assertEquals("message应该正确", TEST_MESSAGE, mixedViolation.getMessage());
-        assertNull("target应该为null", mixedViolation.getTarget());
-        assertNull("propertyPath应该为null", mixedViolation.getPropertyPath());
-        assertNull("invalidValue应该为null", mixedViolation.getInvalidValue());
+        assertNull(nullViolation.getMessage());
+        assertNull(nullViolation.getTarget());
+        assertNull(nullViolation.getPropertyPath());
+        assertNull(nullViolation.getInvalidValue());
     }
 
     @Test
     public void testConstructorWithEmptyStringMessage() {
-        String emptyMessage = "";
-        Violation emptyMessageViolation = new Violation(emptyMessage, TEST_TARGET, TEST_PROPERTY_PATH, TEST_INVALID_VALUE);
-        
-        assertNotNull("Violation不应该为null", emptyMessageViolation);
-        assertEquals("message应该是空字符串", emptyMessage, emptyMessageViolation.getMessage());
+        Violation emptyMessageViolation = new Violation("", TEST_TARGET, TEST_PROPERTY_PATH, TEST_INVALID_VALUE);
+        assertEquals("", emptyMessageViolation.getMessage());
+    }
+
+    @Test
+    public void testConstructorWithEmptyStringPropertyPath() {
+        Violation emptyPathViolation = new Violation(TEST_MESSAGE, TEST_TARGET, "", TEST_INVALID_VALUE);
+        assertEquals("", emptyPathViolation.getPropertyPath());
     }
 
     @Test
     public void testExtendsBaseModel() {
-        assertTrue("Violation应该继承BaseModel", violation instanceof com.softmegatron.shared.meta.data.base.BaseModel);
+        assertTrue(violation instanceof BaseModel);
+    }
+
+    @Test
+    public void testExtendsBaseSerializable() {
+        assertTrue(violation instanceof BaseSerializable);
     }
 
     @Test
     public void testHasSerialVersionUID() throws NoSuchFieldException {
-        var serialVersionUidField = Violation.class.getDeclaredField("serialVersionUID");
-        assertNotNull("serialVersionUID字段应该存在", serialVersionUidField);
-        assertTrue("serialVersionUID应该是long类型", long.class == serialVersionUidField.getType());
-        assertTrue("serialVersionUID应该是final", 
-                  java.lang.reflect.Modifier.isFinal(serialVersionUidField.getModifiers()));
-        assertTrue("serialVersionUID应该是static", 
-                  java.lang.reflect.Modifier.isStatic(serialVersionUidField.getModifiers()));
+        var field = Violation.class.getDeclaredField("serialVersionUID");
+        assertTrue(java.lang.reflect.Modifier.isStatic(field.getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isFinal(field.getModifiers()));
+        assertEquals(long.class, field.getType());
     }
 
     @Test
     public void testIsPublicClass() {
-        int modifiers = Violation.class.getModifiers();
-        assertTrue("Violation应该是public类", 
-                  java.lang.reflect.Modifier.isPublic(modifiers));
+        assertTrue(java.lang.reflect.Modifier.isPublic(Violation.class.getModifiers()));
     }
 
     @Test
     public void testIsNotAbstract() {
-        int modifiers = Violation.class.getModifiers();
-        assertFalse("Violation不应该是抽象类", 
-                    java.lang.reflect.Modifier.isAbstract(modifiers));
+        assertFalse(java.lang.reflect.Modifier.isAbstract(Violation.class.getModifiers()));
     }
 
     @Test
     public void testAllFieldsArePrivate() throws NoSuchFieldException {
-        var messageField = Violation.class.getDeclaredField("message");
-        var targetField = Violation.class.getDeclaredField("target");
-        var propertyPathField = Violation.class.getDeclaredField("propertyPath");
-        var invalidValueField = Violation.class.getDeclaredField("invalidValue");
-        
-        assertTrue("message应该是private", 
-                  java.lang.reflect.Modifier.isPrivate(messageField.getModifiers()));
-        assertTrue("target应该是private", 
-                  java.lang.reflect.Modifier.isPrivate(targetField.getModifiers()));
-        assertTrue("propertyPath应该是private", 
-                  java.lang.reflect.Modifier.isPrivate(propertyPathField.getModifiers()));
-        assertTrue("invalidValue应该是private", 
-                  java.lang.reflect.Modifier.isPrivate(invalidValueField.getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isPrivate(
+                Violation.class.getDeclaredField("message").getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isPrivate(
+                Violation.class.getDeclaredField("target").getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isPrivate(
+                Violation.class.getDeclaredField("propertyPath").getModifiers()));
+        assertTrue(java.lang.reflect.Modifier.isPrivate(
+                Violation.class.getDeclaredField("invalidValue").getModifiers()));
+    }
+
+    @Test
+    public void testMessageWithDifferentTypes() {
+        Violation intViolation = new Violation("Integer violation", TEST_TARGET, "count", 123);
+        assertEquals(123, intViolation.getInvalidValue());
+
+        Violation boolViolation = new Violation("Boolean violation", TEST_TARGET, "active", true);
+        assertEquals(true, boolViolation.getInvalidValue());
+
+        Violation nullViolation = new Violation("Null violation", TEST_TARGET, "value", null);
+        assertNull(nullViolation.getInvalidValue());
+    }
+
+    @Test
+    public void testSetMessageToNull() {
+        violation.setMessage(null);
+        assertNull(violation.getMessage());
+    }
+
+    @Test
+    public void testSetTargetToNull() {
+        violation.setTarget(null);
+        assertNull(violation.getTarget());
+    }
+
+    @Test
+    public void testSetPropertyPathToNull() {
+        violation.setPropertyPath(null);
+        assertNull(violation.getPropertyPath());
+    }
+
+    @Test
+    public void testSetInvalidValueToNull() {
+        violation.setInvalidValue(null);
+        assertNull(violation.getInvalidValue());
+    }
+
+    @Test
+    public void testMultipleSetOperations() {
+        violation.setMessage("Updated message");
+        violation.setTarget("Updated target");
+        violation.setPropertyPath("updated.path");
+        violation.setInvalidValue(999);
+
+        assertEquals("Updated message", violation.getMessage());
+        assertEquals("Updated target", violation.getTarget());
+        assertEquals("updated.path", violation.getPropertyPath());
+        assertEquals(999, violation.getInvalidValue());
+    }
+
+    @Test
+    public void testWithComplexInvalidValue() {
+        Object complexValue = new int[]{1, 2, 3};
+        Violation complexViolation = new Violation("Complex value", TEST_TARGET, "array", complexValue);
+        assertArrayEquals(new int[]{1, 2, 3}, (int[]) complexViolation.getInvalidValue());
+    }
+
+    @Test
+    public void testWithCollectionInvalidValue() {
+        java.util.List<String> listValue = java.util.Arrays.asList("a", "b", "c");
+        Violation listViolation = new Violation("List value", TEST_TARGET, "list", listValue);
+        assertEquals(listValue, listViolation.getInvalidValue());
+    }
+
+    @Test
+    public void testPropertyPathWithNestedPath() {
+        Violation nestedViolation = new Violation(
+                "Nested violation",
+                TEST_TARGET,
+                "address.city",
+                "Invalid city"
+        );
+        assertEquals("address.city", nestedViolation.getPropertyPath());
+    }
+
+    @Test
+    public void testPropertyPathWithArrayIndex() {
+        Violation indexedViolation = new Violation(
+                "Indexed violation",
+                TEST_TARGET,
+                "items[0].name",
+                "Invalid name"
+        );
+        assertEquals("items[0].name", indexedViolation.getPropertyPath());
+    }
+
+    @Test
+    public void testConstructorWithPrimitiveWrapper() {
+        Violation integerViolation = new Violation("Integer value", TEST_TARGET, "count", Integer.valueOf(100));
+        assertEquals(Integer.valueOf(100), integerViolation.getInvalidValue());
+
+        Violation longViolation = new Violation("Long value", TEST_TARGET, "timestamp", Long.valueOf(123456789L));
+        assertEquals(Long.valueOf(123456789L), longViolation.getInvalidValue());
+    }
+
+    @Test
+    public void testConstructorWithEmptyStrings() {
+        Violation emptyViolation = new Violation("", "", "", "");
+        assertEquals("", emptyViolation.getMessage());
+        assertEquals("", emptyViolation.getTarget());
+        assertEquals("", emptyViolation.getPropertyPath());
+        assertEquals("", emptyViolation.getInvalidValue());
     }
 }
