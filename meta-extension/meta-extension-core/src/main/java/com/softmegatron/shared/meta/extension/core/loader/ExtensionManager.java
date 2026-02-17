@@ -1,16 +1,23 @@
-package com.softmegatron.shared.meta.extension.loader;
+package com.softmegatron.shared.meta.extension.core.loader;
 
-import com.softmegatron.shared.meta.extension.annotation.Spi;
-import com.softmegatron.shared.meta.extension.exception.ExtensionException;
+import com.softmegatron.shared.meta.extension.core.annotation.Spi;
+import com.softmegatron.shared.meta.extension.core.exception.ExtensionException;
+import com.softmegatron.shared.meta.extension.core.factory.ExtensionFactory;
+import com.softmegatron.shared.meta.extension.core.factory.SpiExtensionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * 扩展管理器
  * <p>
- * 统一的扩展点入口，提供静态方法获取扩展实例。
+ * 统一的扩展点入口，通过多个 {@link ExtensionFactory} 获取扩展实例。
+ * 支持从 SPI 配置、Spring 容器等多种来源获取扩展。
  * </p>
  *
  * <pre>
@@ -31,14 +38,43 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class ExtensionManager {
 
-    /** 扩展点类型 -> ExtensionLoader 缓存 */
-    private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> LOADER_CACHE = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionManager.class);
+
+    /** 工厂列表（按优先级排序） */
+    private static final List<ExtensionFactory> FACTORIES = new ArrayList<>();
+
+    static {
+        loadFactories();
+    }
 
     private ExtensionManager() {
     }
 
     /**
+     * 加载所有 ExtensionFactory 实现
+     */
+    private static void loadFactories() {
+        ServiceLoader<ExtensionFactory> loader = ServiceLoader.load(ExtensionFactory.class);
+
+        List<ExtensionFactory> factories = new ArrayList<>();
+        loader.forEach(factories::add);
+
+        factories.sort(Comparator.comparingInt(ExtensionFactory::getOrder));
+
+        if (factories.isEmpty()) {
+            factories.add(new SpiExtensionFactory());
+        }
+
+        FACTORIES.addAll(factories);
+
+        LOGGER.info("Loaded {} extension factories", FACTORIES.size());
+    }
+
+    /**
      * 获取指定扩展实现
+     * <p>
+     * 依次尝试每个工厂，找到即返回。
+     * </p>
      *
      * @param type 扩展点接口类型
      * @param key  扩展键值
@@ -47,7 +83,19 @@ public final class ExtensionManager {
      * @throws ExtensionException 如果扩展点配置无效
      */
     public static <T> T getExtension(Class<T> type, String key) {
-        return getLoader(type).getExtension(key);
+        validateType(type);
+        for (ExtensionFactory factory : FACTORIES) {
+            try {
+                T extension = factory.getExtension(type, key);
+                if (extension != null) {
+                    return extension;
+                }
+            } catch (Exception e) {
+                LOGGER.warn("ExtensionFactory [{}] failed to get extension: {}",
+                        factory.getClass().getSimpleName(), e.getMessage());
+            }
+        }
+        return null;
     }
 
     /**
@@ -59,7 +107,9 @@ public final class ExtensionManager {
      * @throws ExtensionException 如果扩展点配置无效
      */
     public static <T> T getDefaultExtension(Class<T> type) {
-        return getLoader(type).getDefaultExtension();
+        validateType(type);
+        Spi spi = type.getAnnotation(Spi.class);
+        return getExtension(type, spi.value());
     }
 
     /**
@@ -72,7 +122,11 @@ public final class ExtensionManager {
      * @throws ExtensionException 如果扩展点配置无效
      */
     public static <T> T getExtensionOrDefault(Class<T> type, String key) {
-        return getLoader(type).getExtensionOrDefault(key);
+        T extension = getExtension(type, key);
+        if (extension != null) {
+            return extension;
+        }
+        return getDefaultExtension(type);
     }
 
     /**
@@ -85,7 +139,7 @@ public final class ExtensionManager {
      * @throws ExtensionException 如果扩展点配置无效
      */
     public static <T> boolean hasExtension(Class<T> type, String key) {
-        return getLoader(type).hasExtension(key);
+        return getExtension(type, key) != null;
     }
 
     /**
@@ -97,16 +151,8 @@ public final class ExtensionManager {
      * @throws ExtensionException 如果扩展点配置无效
      */
     public static <T> Set<String> getExtensionKeys(Class<T> type) {
-        return getLoader(type).getExtensionKeys();
-    }
-
-    /**
-     * 获取或创建 ExtensionLoader
-     */
-    @SuppressWarnings("unchecked")
-    private static <T> ExtensionLoader<T> getLoader(Class<T> type) {
         validateType(type);
-        return (ExtensionLoader<T>) LOADER_CACHE.computeIfAbsent(type, ExtensionLoader::new);
+        return ExtensionLoader.getLoader(type).getExtensionKeys();
     }
 
     /**

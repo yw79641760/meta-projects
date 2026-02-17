@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.softmegatron.shared</groupId>
-            <artifactId>meta-extension</artifactId>
+            <artifactId>meta-extension-core</artifactId>
         </dependency>
     </dependencies>
 

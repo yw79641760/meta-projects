@@ -1,4 +1,4 @@
-package com.softmegatron.shared.meta.extension;
+package com.softmegatron.shared.meta.extension.core;
 
 import java.util.UUID;
 

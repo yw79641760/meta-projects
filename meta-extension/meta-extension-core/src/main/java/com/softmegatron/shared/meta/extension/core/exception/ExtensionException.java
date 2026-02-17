@@ -1,4 +1,4 @@
-package com.softmegatron.shared.meta.extension.exception;
+package com.softmegatron.shared.meta.extension.core.exception;
 
 /**
  * 扩展模块统一异常

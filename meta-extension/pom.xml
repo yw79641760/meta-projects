@@ -7,14 +7,50 @@
         <groupId>com.softmegatron.shared</groupId>
         <artifactId>meta-bom</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../meta-bom/pom.xml</relativePath>
     </parent>
 
     <artifactId>meta-extension</artifactId>
+    <packaging>pom</packaging>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <modules>
+        <module>meta-extension-core</module>
+        <module>meta-extension-spring</module>
+    </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-data</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-extension-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-extension-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

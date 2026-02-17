@@ -1,9 +1,9 @@
-package com.softmegatron.shared.meta.extension.loader;
+package com.softmegatron.shared.meta.extension.core.loader;
 
 import com.softmegatron.shared.meta.core.utils.ClassUtils;
-import com.softmegatron.shared.meta.extension.annotation.Spi;
-import com.softmegatron.shared.meta.extension.enums.ExtensionScope;
-import com.softmegatron.shared.meta.extension.exception.ExtensionException;
+import com.softmegatron.shared.meta.extension.core.annotation.Spi;
+import com.softmegatron.shared.meta.extension.core.enums.ExtensionScope;
+import com.softmegatron.shared.meta.extension.core.exception.ExtensionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +13,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * 扩展加载器
@@ -35,6 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ExtensionLoader<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionLoader.class);
+
+    /** ExtensionLoader 缓存 */
+    private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> LOADER_CACHE = new ConcurrentHashMap<>();
 
     /** 扩展点接口类型 */
     private final Class<T> type;
@@ -62,6 +65,35 @@ public class ExtensionLoader<T> {
     ExtensionLoader(Class<T> type) {
         this.type = type;
         this.spi = type.getAnnotation(Spi.class);
+    }
+
+    /**
+     * 获取指定类型的 ExtensionLoader
+     *
+     * @param type 扩展点接口类型
+     * @param <T>  扩展点类型
+     * @return ExtensionLoader 实例
+     * @throws ExtensionException 如果类型无效
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ExtensionLoader<T> getLoader(Class<T> type) {
+        validateType(type);
+        return (ExtensionLoader<T>) LOADER_CACHE.computeIfAbsent(type, ExtensionLoader::new);
+    }
+
+    /**
+     * 校验扩展点类型
+     */
+    private static <T> void validateType(Class<T> type) {
+        if (type == null) {
+            throw new ExtensionException("Extension type cannot be null");
+        }
+        if (!type.isInterface()) {
+            throw new ExtensionException("Extension type must be an interface: " + type.getName());
+        }
+        if (!type.isAnnotationPresent(Spi.class)) {
+            throw new ExtensionException("Extension type must be annotated with @Spi: " + type.getName());
+        }
     }
 
     /**

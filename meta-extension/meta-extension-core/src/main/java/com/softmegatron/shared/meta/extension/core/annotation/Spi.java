@@ -1,6 +1,6 @@
-package com.softmegatron.shared.meta.extension.annotation;
+package com.softmegatron.shared.meta.extension.core.annotation;
 
-import com.softmegatron.shared.meta.extension.enums.ExtensionScope;
+import com.softmegatron.shared.meta.extension.core.enums.ExtensionScope;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

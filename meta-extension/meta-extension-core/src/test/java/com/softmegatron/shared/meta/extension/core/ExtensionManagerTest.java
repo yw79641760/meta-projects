@@ -1,7 +1,7 @@
-package com.softmegatron.shared.meta.extension;
+package com.softmegatron.shared.meta.extension.core;
 
-import com.softmegatron.shared.meta.extension.exception.ExtensionException;
-import com.softmegatron.shared.meta.extension.loader.ExtensionManager;
+import com.softmegatron.shared.meta.extension.core.exception.ExtensionException;
+import com.softmegatron.shared.meta.extension.core.loader.ExtensionManager;
 import org.junit.Test;
 
 import java.util.Set;

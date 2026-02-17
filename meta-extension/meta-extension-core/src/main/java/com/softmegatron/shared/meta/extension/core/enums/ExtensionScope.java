@@ -1,4 +1,4 @@
-package com.softmegatron.shared.meta.extension.enums;
+package com.softmegatron.shared.meta.extension.core.enums;
 
 import com.softmegatron.shared.meta.data.base.BaseEnum;
 /**

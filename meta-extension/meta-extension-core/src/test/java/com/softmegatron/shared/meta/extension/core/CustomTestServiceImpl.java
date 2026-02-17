@@ -1,4 +1,4 @@
-package com.softmegatron.shared.meta.extension;
+package com.softmegatron.shared.meta.extension.core;
 
 /**
  * 自定义测试实现
