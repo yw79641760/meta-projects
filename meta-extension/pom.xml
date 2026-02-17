@@ -2,46 +2,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>meta-bom</artifactId>
         <groupId>com.softmegatron.shared</groupId>
+        <artifactId>meta-bom</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../meta-bom/pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>meta-extension</artifactId>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.softmegatron.shared</groupId>
-            <artifactId>meta-data</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.softmegatron.shared</groupId>
-            <artifactId>meta-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>meta-extension-core</module>
+        <module>meta-extension-spring</module>
+    </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-data</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-extension-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-extension-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

@@ -1,0 +1,3 @@
+# TestService SPI extensions
+default=com.softmegatron.shared.meta.extension.core.DefaultTestServiceImpl
+custom=com.softmegatron.shared.meta.extension.core.CustomTestServiceImpl

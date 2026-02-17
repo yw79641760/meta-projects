@@ -30,6 +30,8 @@
         <slf4j.version>2.0.17</slf4j.version>
         <okhttp.version>5.3.2</okhttp.version>
         <dubbo.version>3.3.6</dubbo.version>
+        <junit.version>4.13.2</junit.version>
+        <spring.version>6.1.14</spring.version>
     </properties>
     
     <modules>
@@ -94,6 +96,16 @@
             <dependency>
                 <groupId>com.softmegatron.shared</groupId>
                 <artifactId>meta-extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-extension-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-extension-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -166,7 +178,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.13.2</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- logger -->
@@ -210,6 +222,18 @@
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo</artifactId>
                 <version>${dubbo.version}</version>
+            </dependency>
+            <!-- spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

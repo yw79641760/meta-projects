@@ -1,6 +1,6 @@
 package com.softmegatron.shared.meta.remoting.core;
 
-import com.softmegatron.shared.meta.extension.annotation.Spi;
+import com.softmegatron.shared.meta.extension.core.annotation.Spi;
 import com.softmegatron.shared.meta.remoting.core.model.RemoteInvocation;
 import com.softmegatron.shared.meta.remoting.core.model.RemoteResponse;
 
