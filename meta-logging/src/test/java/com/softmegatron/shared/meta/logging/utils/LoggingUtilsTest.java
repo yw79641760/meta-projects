@@ -1,20 +1,20 @@
 package com.softmegatron.shared.meta.logging.utils;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * LoggingUtils 测试类
  *
  * @author <a href="mailto:wei.yan@softmegatron.com">yw</a>
- * @description 测试 LoggingUtils 的各种功能
- * @date 2026/2/6 15:05
  * @since 1.0.0
  */
 public class LoggingUtilsTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingUtilsTest.class);
 
     @Test
     public void testBuildWithNoArgs() {
@@ -156,6 +156,95 @@ public class LoggingUtilsTest {
         String result = LoggingUtils.build("{} {} {} {} {} {} {} {} {} {}", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J");
         assertNotNull("日志内容不应为null", result);
         assertEquals("多个参数应正确替换", "A B C D E F G H I J", result);
+    }
+
+    @Test
+    public void testIsDebugEnabled() {
+        boolean result = LoggingUtils.isDebugEnabled(LOGGER);
+        assertNotNull("isDebugEnabled不应返回null", Boolean.valueOf(result));
+    }
+
+    @Test
+    public void testIsDebugEnabledWithNullLogger() {
+        try {
+            LoggingUtils.isDebugEnabled(null);
+            fail("应该抛出NullPointerException");
+        } catch (NullPointerException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testIsInfoEnabled() {
+        boolean result = LoggingUtils.isInfoEnabled(LOGGER);
+        assertNotNull("isInfoEnabled不应返回null", Boolean.valueOf(result));
+    }
+
+    @Test
+    public void testIsInfoEnabledWithNullLogger() {
+        try {
+            LoggingUtils.isInfoEnabled(null);
+            fail("应该抛出NullPointerException");
+        } catch (NullPointerException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testIsWarnEnabled() {
+        boolean result = LoggingUtils.isWarnEnabled(LOGGER);
+        assertNotNull("isWarnEnabled不应返回null", Boolean.valueOf(result));
+    }
+
+    @Test
+    public void testIsWarnEnabledWithNullLogger() {
+        try {
+            LoggingUtils.isWarnEnabled(null);
+            fail("应该抛出NullPointerException");
+        } catch (NullPointerException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testLoggingUtilsHasPrivateConstructor() throws NoSuchMethodException {
+        var constructor = LoggingUtils.class.getDeclaredConstructor();
+        assertTrue("构造函数应该是private",
+                java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
+    }
+
+    @Test
+    public void testBuildMethodsAreStatic() throws NoSuchMethodException {
+        var buildMethod = LoggingUtils.class.getMethod("build", String.class, Object[].class);
+        assertTrue("build方法应该是static",
+                java.lang.reflect.Modifier.isStatic(buildMethod.getModifiers()));
+    }
+
+    @Test
+    public void testIsEnabledMethodsAreStatic() throws NoSuchMethodException {
+        var isDebugEnabledMethod = LoggingUtils.class.getMethod("isDebugEnabled", Logger.class);
+        assertTrue("isDebugEnabled方法应该是static",
+                java.lang.reflect.Modifier.isStatic(isDebugEnabledMethod.getModifiers()));
+
+        var isInfoEnabledMethod = LoggingUtils.class.getMethod("isInfoEnabled", Logger.class);
+        assertTrue("isInfoEnabled方法应该是static",
+                java.lang.reflect.Modifier.isStatic(isInfoEnabledMethod.getModifiers()));
+
+        var isWarnEnabledMethod = LoggingUtils.class.getMethod("isWarnEnabled", Logger.class);
+        assertTrue("isWarnEnabled方法应该是static",
+                java.lang.reflect.Modifier.isStatic(isWarnEnabledMethod.getModifiers()));
+    }
+
+    @Test
+    public void testBuildWithNullMessage() {
+        String result = LoggingUtils.build(null);
+        assertNull("null消息应返回null", result);
+    }
+
+    @Test
+    public void testBuildWithNullMessageAndArgs() {
+        String result = LoggingUtils.build(null, "arg1", "arg2");
+        assertNull("null消息应返回null", result);
     }
 
     private static class TestObject {
