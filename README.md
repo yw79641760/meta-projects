@@ -13,7 +13,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![build_status](https://github.com/SoftMegatron/meta-projects/actions/workflows/maven.yml/badge.svg)
-[[Maintainability](https://qlty.sh/gh/SoftMegatron/projects/meta-projects/maintainability.svg)](https://qlty.sh/gh/SoftMegatron/projects/meta-projects)
+[![Maintainability](https://qlty.sh/gh/SoftMegatron/projects/meta-projects/maintainability.svg)](https://qlty.sh/gh/SoftMegatron/projects/meta-projects)
 [![codecov](https://codecov.io/github/SoftMegatron/meta-projects/graph/badge.svg?token=3CFXBDSBC2)](https://codecov.io/github/SoftMegatron/meta-projects)
 [![Known Vulnerabilities](https://snyk.io/test/github/SoftMegatron/meta-projects/badge.svg)](https://snyk.io/test/github/SoftMegatron/meta-projects)
 
