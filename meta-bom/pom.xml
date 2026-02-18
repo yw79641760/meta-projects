@@ -32,6 +32,9 @@
         <dubbo.version>3.3.6</dubbo.version>
         <junit.version>4.13.2</junit.version>
         <spring.version>6.1.14</spring.version>
+        <spring.boot.version>3.2.0</spring.boot.version>
+        <micrometer.version>1.12.0</micrometer.version>
+        <prometheus.version>0.16.0</prometheus.version>
     </properties>
     
     <modules>
@@ -43,6 +46,7 @@
         <module>../meta-extension</module>
         <module>../meta-remoting</module>
         <module>../meta-validation</module>
+        <module>../meta-monitoring</module>
     </modules>
 
     <dependencyManagement>
@@ -127,6 +131,41 @@
                 <groupId>com.softmegatron.shared</groupId>
                 <artifactId>meta-remoting-dubbo</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-monitoring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-monitoring-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-monitoring-micrometer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-monitoring-prometheus</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.softmegatron.shared</groupId>
+                <artifactId>meta-monitoring-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-core</artifactId>
+                <version>${micrometer.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient</artifactId>
+                <version>${prometheus.version}</version>
             </dependency>
             <!-- utils -->
             <dependency>
